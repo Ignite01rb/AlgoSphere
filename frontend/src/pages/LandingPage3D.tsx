@@ -776,7 +776,7 @@ export default function LandingPage3D() {
                   ].map((c) => (
                     <button
                       key={c.label}
-                      onClick={() => setColorTheme(c.val as any)}
+                      onClick={() => setColorTheme(c.val as "amber" | "emerald" | "rose")}
                       className={`py-1 rounded text-[9px] text-center font-mono cursor-pointer transition-all border ${
                         colorTheme === c.val
                           ? "bg-primary border-primary text-white font-bold"

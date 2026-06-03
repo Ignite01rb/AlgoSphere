@@ -29,7 +29,7 @@ import {
   YAxis,
 } from "recharts";
 
-const CustomTooltip = ({ active, payload }: any) => {
+const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { value: number | string }[] }) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-card/95 border border-border/50 backdrop-blur-md px-3.5 py-2 rounded-xl shadow-xl text-left">
@@ -335,7 +335,7 @@ const Dashboard = () => {
                 ].map((tab) => (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id as any)}
+                    onClick={() => setActiveTab(tab.id as "overview" | "members")}
                     className={`pb-2 text-[10px] font-bold tracking-widest uppercase transition-all flex items-center gap-1.5 relative cursor-pointer ${
                       activeTab === tab.id
                         ? "text-primary"
