@@ -15,6 +15,7 @@ import (
 	"github.com/glebarez/sqlite"
 	mysqlDriver "github.com/go-sql-driver/mysql"
 	gormmysql "gorm.io/driver/mysql"
+	gormpostgres "gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
 	"algosphere/backend/internal/config"
@@ -23,8 +24,9 @@ import (
 type Dialect string
 
 const (
-	DialectSQLite Dialect = "sqlite"
-	DialectMySQL  Dialect = "mysql"
+	DialectSQLite   Dialect = "sqlite"
+	DialectMySQL    Dialect = "mysql"
+	DialectPostgres Dialect = "postgres"
 )
 
 func Open(ctx context.Context, settings config.Settings) (*gorm.DB, Dialect, error) {
@@ -39,6 +41,8 @@ func Open(ctx context.Context, settings config.Settings) (*gorm.DB, Dialect, err
 		dialector = sqlite.Open(dsn)
 	case DialectMySQL:
 		dialector = gormmysql.Open(dsn)
+	case DialectPostgres:
+		dialector = gormpostgres.Open(dsn)
 	default:
 		return nil, "", fmt.Errorf("unsupported database dialect %q", dialect)
 	}
@@ -97,6 +101,8 @@ func buildDSN(settings config.Settings) (Dialect, string, error) {
 		return buildMySQLDSN(strings.TrimPrefix(settings.DatabaseURL, "mysql+pymysql://"), settings)
 	case strings.HasPrefix(settings.DatabaseURL, "mysql://"):
 		return buildMySQLDSN(strings.TrimPrefix(settings.DatabaseURL, "mysql://"), settings)
+	case strings.HasPrefix(settings.DatabaseURL, "postgres://") || strings.HasPrefix(settings.DatabaseURL, "postgresql://"):
+		return DialectPostgres, settings.DatabaseURL, nil
 	default:
 		return "", "", fmt.Errorf("unsupported ALGOSPHERE_DATABASE_URL format %q", settings.DatabaseURL)
 	}
