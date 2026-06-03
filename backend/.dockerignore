@@ -1,0 +1,6 @@
+*.db
+*.sqlite3
+smoke.db
+tunetribe.db
+algosphere
+algosphere.exe

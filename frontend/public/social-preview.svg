@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="70" y1="40" x2="1130" y2="590" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#081120" />
+      <stop offset="0.52" stop-color="#0f172a" />
+      <stop offset="1" stop-color="#14213d" />
+    </linearGradient>
+    <radialGradient id="glowBlue" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(247 119) rotate(39.7) scale(348 247)">
+      <stop stop-color="#60a5fa" stop-opacity="0.35" />
+      <stop offset="1" stop-color="#60a5fa" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="glowGreen" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(961 505) rotate(162.3) scale(332 235)">
+      <stop stop-color="#34d399" stop-opacity="0.28" />
+      <stop offset="1" stop-color="#34d399" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="panelStroke" x1="157" y1="106" x2="1037" y2="520" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#60a5fa" stop-opacity="0.35" />
+      <stop offset="1" stop-color="#34d399" stop-opacity="0.16" />
+    </linearGradient>
+    <linearGradient id="recordRing" x1="210" y1="228" x2="424" y2="442" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#60a5fa" />
+      <stop offset="1" stop-color="#34d399" />
+    </linearGradient>
+    <linearGradient id="note" x1="340" y1="190" x2="476" y2="388" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f97316" />
+      <stop offset="1" stop-color="#fb7185" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" rx="36" fill="url(#bg)" />
+  <rect width="1200" height="630" rx="36" fill="url(#glowBlue)" />
+  <rect width="1200" height="630" rx="36" fill="url(#glowGreen)" />
+
+  <g opacity="0.17" stroke="#94a3b8" stroke-width="1.5">
+    <path d="M74 129H1126" />
+    <path d="M74 502H1126" />
+    <path d="M157 74V556" />
+    <path d="M1043 74V556" />
+  </g>
+
+  <rect x="116" y="100" width="968" height="430" rx="30" fill="#0f172a" fill-opacity="0.9" />
+  <rect x="116.75" y="100.75" width="966.5" height="428.5" rx="29.25" stroke="url(#panelStroke)" stroke-width="1.5" />
+
+  <g>
+    <circle cx="315" cy="315" r="108" fill="#0b1220" stroke="url(#recordRing)" stroke-width="22" />
+    <circle cx="315" cy="315" r="28" fill="#dbeafe" fill-opacity="0.92" />
+    <path d="M408 179v152.5c-16.4-18.3-44.2-24.7-69.5-12.9-32.7 15.2-46 55.4-19.8 83.9 27 29.6 79.9 22.5 100.5-13.8 5.6-9.7 8.8-20.8 8.8-32.5V237.8l95-23.8v109.2c-16.4-17.6-44.2-24.1-69.5-12.3-32.7 15.2-46 55.4-19.8 84 27 29.5 79.9 22.4 100.5-13.9 5.6-9.6 8.8-20.8 8.8-32.4V170l-135.5 9Z" fill="url(#note)" />
+    <path d="M245 164.5c40.5-29.1 90.1-35.9 135.6-23.1" stroke="#60a5fa" stroke-linecap="round" stroke-width="12" opacity="0.85" />
+    <path d="M241 208.5c27.6-19.4 59.8-25.3 90.7-18.9" stroke="#34d399" stroke-linecap="round" stroke-width="12" opacity="0.85" />
+  </g>
+
+  <g font-family="Arial, Helvetica, sans-serif" fill="#e2e8f0">
+    <text x="614" y="220" font-size="76" font-weight="700" letter-spacing="-2">TuneTribe</text>
+    <text x="614" y="286" font-size="28" fill="#cbd5e1">Shared music ledger for groups.</text>
+    <text x="614" y="334" font-size="24" fill="#94a3b8">Share Spotify, Apple Music, and YouTube links.</text>
+    <text x="614" y="370" font-size="24" fill="#94a3b8">Track genres, sources, and who added what.</text>
+  </g>
+
+  <g font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700">
+    <rect x="614" y="404" width="156" height="52" rx="26" fill="#14213d" stroke="#1d4ed8" />
+    <text x="692" y="438" text-anchor="middle" fill="#dbeafe">Spotify</text>
+    <rect x="788" y="404" width="200" height="52" rx="26" fill="#14213d" stroke="#be123c" />
+    <text x="888" y="438" text-anchor="middle" fill="#ffe4e6">Apple Music</text>
+    <rect x="614" y="474" width="170" height="52" rx="26" fill="#14213d" stroke="#dc2626" />
+    <text x="699" y="508" text-anchor="middle" fill="#fee2e2">YouTube</text>
+    <rect x="804" y="474" width="218" height="52" rx="26" fill="#14213d" stroke="#10b981" />
+    <text x="913" y="508" text-anchor="middle" fill="#d1fae5">Group trends</text>
+  </g>
+
+  <text x="152" y="574" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="#64748b">tunetribe-music.vercel.app</text>
+</svg>

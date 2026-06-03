@@ -1,0 +1,138 @@
+services:
+  mysql:
+    image: mysql:8.4@sha256:be18eb9dc45eea9b86cb74f8c68ab92ce8569ecc37ea4e6fade02e37036c5ff4
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-name-resolve
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-algosphere}
+      MYSQL_USER: ${MYSQL_USER:-algosphere}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?set MYSQL_PASSWORD in your environment or .env file}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD in your environment or .env file}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$$MYSQL_USER -p$$MYSQL_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - app
+
+  backend:
+    profiles:
+      - app
+    build:
+      context: ./backend
+    environment:
+      ALGOSPHERE_ENVIRONMENT: production
+      ALGOSPHERE_SECRET_KEY: ${ALGOSPHERE_SECRET_KEY:?set ALGOSPHERE_SECRET_KEY in your environment or .env file}
+      ALGOSPHERE_DATABASE_URL: mysql://${MYSQL_USER:-algosphere}:${MYSQL_PASSWORD:?set MYSQL_PASSWORD in your environment or .env file}@mysql:3306/${MYSQL_DATABASE:-algosphere}?charset=utf8mb4&parseTime=true
+      ALGOSPHERE_DATABASE_AUTO_MIGRATE: "false"
+      ALGOSPHERE_CORS_ORIGINS: ${ALGOSPHERE_CORS_ORIGINS:?set ALGOSPHERE_CORS_ORIGINS in your environment or .env file}
+      ALGOSPHERE_ALLOWED_HOSTS: ${ALGOSPHERE_ALLOWED_HOSTS:?set ALGOSPHERE_ALLOWED_HOSTS in your environment or .env file}
+      ALGOSPHERE_SEED_DEMO_DATA: ${ALGOSPHERE_SEED_DEMO_DATA:-false}
+      ALGOSPHERE_AUTH_RATE_LIMIT_MAX_ATTEMPTS: ${ALGOSPHERE_AUTH_RATE_LIMIT_MAX_ATTEMPTS:-5}
+      ALGOSPHERE_AUTH_RATE_LIMIT_WINDOW_SECONDS: ${ALGOSPHERE_AUTH_RATE_LIMIT_WINDOW_SECONDS:-300}
+      ALGOSPHERE_ENABLE_ADMIN: ${ALGOSPHERE_ENABLE_ADMIN:-false}
+      ALGOSPHERE_ADMIN_EMAILS: ${ALGOSPHERE_ADMIN_EMAILS:-}
+      ALGOSPHERE_ADMIN_RATE_LIMIT_MAX_ATTEMPTS: ${ALGOSPHERE_ADMIN_RATE_LIMIT_MAX_ATTEMPTS:-5}
+      ALGOSPHERE_ADMIN_RATE_LIMIT_WINDOW_SECONDS: ${ALGOSPHERE_ADMIN_RATE_LIMIT_WINDOW_SECONDS:-300}
+      ALGOSPHERE_FRIEND_LOOKUP_RATE_LIMIT_MAX_ATTEMPTS: ${ALGOSPHERE_FRIEND_LOOKUP_RATE_LIMIT_MAX_ATTEMPTS:-20}
+      ALGOSPHERE_FRIEND_LOOKUP_RATE_LIMIT_WINDOW_SECONDS: ${ALGOSPHERE_FRIEND_LOOKUP_RATE_LIMIT_WINDOW_SECONDS:-60}
+      ALGOSPHERE_ENABLE_DOCS: ${ALGOSPHERE_ENABLE_DOCS:-false}
+      ALGOSPHERE_SESSION_COOKIE_NAME: ${ALGOSPHERE_SESSION_COOKIE_NAME:-algosphere-admin-session}
+    expose:
+      - "8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      backend-migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://127.0.0.1:8000/api/health",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+    networks:
+      - app
+
+  backend-migrate:
+    profiles:
+      - app
+    build:
+      context: ./backend
+    command: ["/app/algosphere", "migrate", "up"]
+    environment:
+      ALGOSPHERE_ENVIRONMENT: production
+      ALGOSPHERE_SECRET_KEY: ${ALGOSPHERE_SECRET_KEY:?set ALGOSPHERE_SECRET_KEY in your environment or .env file}
+      ALGOSPHERE_DATABASE_URL: mysql://${MYSQL_USER:-algosphere}:${MYSQL_PASSWORD:?set MYSQL_PASSWORD in your environment or .env file}@mysql:3306/${MYSQL_DATABASE:-algosphere}?charset=utf8mb4&parseTime=true
+      ALGOSPHERE_DATABASE_AUTO_MIGRATE: "false"
+      ALGOSPHERE_DATABASE_SSL_CA_PATH: ${ALGOSPHERE_DATABASE_SSL_CA_PATH:-}
+      ALGOSPHERE_DATABASE_SSL_VERIFY_CERT: ${ALGOSPHERE_DATABASE_SSL_VERIFY_CERT:-false}
+      ALGOSPHERE_DATABASE_SSL_VERIFY_IDENTITY: ${ALGOSPHERE_DATABASE_SSL_VERIFY_IDENTITY:-false}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: "no"
+    networks:
+      - app
+
+  caddy:
+    image: caddy:2.10.2-alpine@sha256:4c6e91c6ed0e2fa03efd5b44747b625fec79bc9cd06ac5235a779726618e530d
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      ALGOSPHERE_PUBLIC_HOSTNAME: ${ALGOSPHERE_PUBLIC_HOSTNAME:?set ALGOSPHERE_PUBLIC_HOSTNAME in your environment or .env file}
+      ALGOSPHERE_ACME_EMAIL: ${ALGOSPHERE_ACME_EMAIL:?set ALGOSPHERE_ACME_EMAIL in your environment or .env file}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+    networks:
+      - public
+      - app
+
+  frontend:
+    profiles:
+      - frontend
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app
+
+volumes:
+  mysql_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  app:
+    internal: true
+  public:

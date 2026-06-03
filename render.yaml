@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: algosphere-api
+    runtime: docker
+    plan: free
+    region: virginia
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /api/health
+    envVars:
+      - key: ALGOSPHERE_ENVIRONMENT
+        value: production
+      - key: ALGOSPHERE_SECRET_KEY
+        generateValue: true
+      - key: ALGOSPHERE_DATABASE_URL
+        sync: false
+      - key: ALGOSPHERE_DATABASE_SSL_CA_PATH
+        value: /etc/ssl/certs/ca-certificates.crt
+      - key: ALGOSPHERE_DATABASE_SSL_VERIFY_CERT
+        value: "true"
+      - key: ALGOSPHERE_DATABASE_SSL_VERIFY_IDENTITY
+        value: "true"
+      - key: ALGOSPHERE_CORS_ORIGINS
+        value: https://trie-quest.vercel.app
+      - key: ALGOSPHERE_ALLOWED_HOSTS
+        value: algosphere-api.onrender.com,127.0.0.1,localhost
+      - key: ALGOSPHERE_DATABASE_AUTO_MIGRATE
+        value: "false"
+      - key: ALGOSPHERE_SEED_DEMO_DATA
+        value: "false"
+      - key: ALGOSPHERE_ENABLE_ADMIN
+        value: "false"
+      - key: ALGOSPHERE_ENABLE_DOCS
+        value: "false"
+      - key: ALGOSPHERE_DATABASE_POOL_RECYCLE_SECONDS
+        value: "300"

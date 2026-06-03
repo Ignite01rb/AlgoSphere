@@ -1,0 +1,12 @@
+{
+  "name": "algosphere-workspace",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build:frontend": "npm --prefix frontend run build",
+    "test:frontend": "npm --prefix frontend run test",
+    "dev:backend": "cd backend && go run ./cmd/algosphere serve",
+    "test:backend": "cd backend && go test ./...",
+    "build": "npm run build:frontend"
+  }
+}

@@ -1,0 +1,16 @@
+{
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "redirects": [
+        {
+            "source": "/admin/:path*",
+            "destination": "https://algosphere-api.onrender.com/admin/:path*",
+            "permanent": false
+        }
+    ],
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
+}

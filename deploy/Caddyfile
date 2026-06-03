@@ -1,0 +1,17 @@
+{
+	email {$ALGOSPHERE_ACME_EMAIL}
+}
+
+{$ALGOSPHERE_PUBLIC_HOSTNAME} {
+	encode gzip zstd
+
+	header {
+		-Server
+		Permissions-Policy "camera=(), geolocation=(), microphone=()"
+		Referrer-Policy "no-referrer"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+	}
+
+	reverse_proxy backend:8000
+}

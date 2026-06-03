@@ -1,0 +1,24 @@
+name: Render Keepalive
+
+on:
+  schedule:
+    - cron: "7,17,27,37,47,57 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: render-keepalive
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  ping:
+    name: Ping Render health check
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    env:
+      RENDER_HEALTHCHECK_URL: https://algosphere-api.onrender.com/api/health
+    steps:
+      - name: Ping Render service
+        run: |
+          curl --fail --silent --show-error --retry 2 --retry-all-errors --retry-delay 20 "$RENDER_HEALTHCHECK_URL" > /dev/null
