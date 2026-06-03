@@ -211,9 +211,9 @@ const AuthPage = () => {
 
         <div className="flex items-center gap-6">
           {[
-            { label: "Squads created", value: stats ? stats.groupsCreated.toLocaleString() : "..." },
-            { label: "Problems shared", value: stats ? stats.problemsShared.toLocaleString() : "..." },
-            { label: "Active members", value: stats ? stats.activeMembers.toLocaleString() : "..." },
+            { label: "Squads created", value: stats?.groupsCreated?.toLocaleString() ?? "..." },
+            { label: "Problems shared", value: stats?.problemsShared?.toLocaleString() ?? "..." },
+            { label: "Active members", value: stats?.activeMembers?.toLocaleString() ?? "..." },
           ].map((stat) => (
             <div 
               key={stat.label}
