@@ -69,20 +69,26 @@ export const AlgoSphereLogo = ({ className = "w-6 h-6" }: { className?: string }
   <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="authLogoGrad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-        <stop stopColor="hsl(37, 90%, 55%)" />
-        <stop offset="0.5" stopColor="hsl(30, 95%, 45%)" />
-        <stop offset="1" stopColor="hsl(15, 90%, 50%)" />
+        <stop stopColor="hsl(var(--primary))" />
+        <stop offset="0.5" stopColor="hsl(var(--primary) / 0.85)" />
+        <stop offset="1" stopColor="hsl(var(--primary) / 0.4)" />
       </linearGradient>
+      <filter id="authLogoGlow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="1.5" result="blur" />
+        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+      </filter>
     </defs>
-    <circle cx="12" cy="12" r="9" stroke="url(#authLogoGrad)" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="2.5 2.5" />
-    <path d="M12 3C14.5 6 14.5 18 12 21" stroke="url(#authLogoGrad)" strokeWidth="1.5" strokeLinecap="round" />
-    <path d="M12 3C9.5 6 9.5 18 12 21" stroke="url(#authLogoGrad)" strokeWidth="1.5" strokeLinecap="round" />
-    <line x1="3" y1="12" x2="21" y2="12" stroke="url(#authLogoGrad)" strokeWidth="1.5" strokeLinecap="round" />
-    <circle cx="12" cy="3" r="1.5" fill="currentColor" className="text-white" />
-    <circle cx="12" cy="21" r="1.5" fill="currentColor" className="text-white" />
-    <circle cx="12" cy="12" r="2" fill="url(#authLogoGrad)" />
-    <circle cx="3" cy="12" r="1" fill="currentColor" className="text-slate-400" />
-    <circle cx="21" cy="12" r="1" fill="currentColor" className="text-slate-400" />
+    <circle cx="12" cy="12" r="10" stroke="url(#authLogoGrad)" strokeWidth="1.2" strokeDasharray="3 3" opacity="0.3" />
+    <path d="M12 2C16 5.5 16 18.5 12 22" stroke="url(#authLogoGrad)" strokeWidth="1" opacity="0.4" />
+    <path d="M12 2C8 5.5 8 18.5 12 22" stroke="url(#authLogoGrad)" strokeWidth="1" opacity="0.4" />
+    <line x1="2" y1="12" x2="22" y2="12" stroke="url(#authLogoGrad)" strokeWidth="1" opacity="0.4" />
+    <path d="M12 7 L17 12 L12 17 L7 12 Z" stroke="url(#authLogoGrad)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M12 2 L12 22" stroke="url(#authLogoGrad)" strokeWidth="1" />
+    <circle cx="12" cy="12" r="2.5" fill="url(#authLogoGrad)" filter="url(#authLogoGlow)" />
+    <circle cx="12" cy="7" r="1.2" fill="currentColor" className="text-foreground" />
+    <circle cx="17" cy="12" r="1.2" fill="currentColor" className="text-foreground" />
+    <circle cx="12" cy="17" r="1.2" fill="currentColor" className="text-foreground" />
+    <circle cx="7" cy="12" r="1.2" fill="currentColor" className="text-foreground" />
   </svg>
 );
 
