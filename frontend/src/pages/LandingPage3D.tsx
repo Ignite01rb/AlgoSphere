@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/hooks/use-theme";
 
-export const AlgoSphereLogo = ({ className = "w-6 h-6" }: { className?: string }) => (
+export const AlgoArenaLogo = ({ className = "w-6 h-6" }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="landingLogoGrad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
@@ -439,9 +439,9 @@ export default function LandingPage3D() {
       <header className="fixed top-0 w-full z-50 bg-background/80 dark:bg-background/75 backdrop-blur-xl border-b border-border/40 dark:border-white/5 transition-all duration-300">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
           <Link to="/dashboard" className="flex items-center gap-3.5">
-            <AlgoSphereLogo className="w-7 h-7" />
+            <AlgoArenaLogo className="w-7 h-7" />
             <span className="text-sm font-bold tracking-[0.15em] uppercase text-foreground font-mono">
-              AlgoSphere
+              AlgoArena
             </span>
           </Link>
 
@@ -553,7 +553,7 @@ export default function LandingPage3D() {
               An ecosystem engineered for problem solvers.
             </h2>
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed max-w-2xl">
-              AlgoSphere compiles active user squads, connected arena loyalty integrations, interactive visual canvas code, and distributed backend scaling components in a single workspace.
+              AlgoArena compiles active user squads, connected arena loyalty integrations, interactive visual canvas code, and distributed backend scaling components in a single workspace.
             </p>
           </div>
 
@@ -704,12 +704,12 @@ export default function LandingPage3D() {
       <footer className="bg-background dark:bg-background border-t border-border/40 dark:border-white/5 py-12 px-6 text-xs text-muted-foreground relative z-10">
         <div className="container mx-auto max-w-6xl flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <AlgoSphereLogo className="w-6.5 h-6.5" />
-            <span className="font-bold text-foreground tracking-tight uppercase font-mono text-sm">AlgoSphere</span>
+            <AlgoArenaLogo className="w-6.5 h-6.5" />
+            <span className="font-bold text-foreground tracking-tight uppercase font-mono text-sm">AlgoArena</span>
           </div>
           
           <p className="text-center md:text-left text-muted-foreground/80 font-mono">
-            &copy; {new Date().getFullYear()} AlgoSphere. Engineered for data structures and scalable system engineering.
+            &copy; {new Date().getFullYear()} AlgoArena. Engineered for data structures and scalable system engineering.
           </p>
 
           <div className="flex items-center gap-6 font-mono text-[10px] uppercase">

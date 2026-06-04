@@ -19,7 +19,7 @@ import { useAuth } from "@/lib/auth";
 import type { Group } from "@/components/GroupCard";
 import { formatRelativeTime } from "@/lib/format";
 
-export const AlgoSphereLogo = ({ className = "w-6 h-6" }: { className?: string }) => (
+export const AlgoArenaLogo = ({ className = "w-6 h-6" }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="navLogoGrad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
@@ -186,9 +186,9 @@ export const MainLayout = () => {
       <aside className="hidden md:flex flex-col w-64 border-r border-border/40 bg-sidebar/20 backdrop-blur-md h-screen sticky top-0 flex-shrink-0">
         {/* Brand header */}
         <div className="h-14 px-6 flex items-center gap-3 border-b border-border/40 cursor-pointer flex-shrink-0" onClick={() => navigate("/dashboard")}>
-          <AlgoSphereLogo className="w-6.5 h-6.5" />
+          <AlgoArenaLogo className="w-6.5 h-6.5" />
           <span className="text-sm font-bold tracking-[0.12em] uppercase font-mono text-foreground">
-            AlgoSphere
+            AlgoArena
           </span>
         </div>
 

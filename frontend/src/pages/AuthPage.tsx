@@ -65,7 +65,7 @@ const GoogleIcon = () => (
   </svg>
 );
 
-export const AlgoSphereLogo = ({ className = "w-6 h-6" }: { className?: string }) => (
+export const AlgoArenaLogo = ({ className = "w-6 h-6" }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="authLogoGrad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
@@ -180,9 +180,9 @@ const AuthPage = () => {
       <div className="hidden lg:flex lg:w-1/2 bg-[radial-gradient(circle_at_top_left,rgba(217,119,6,0.12),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(15,23,42,0.98),#030712)] relative before:absolute before:inset-0 before:bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] before:bg-[size:40px_40px] before:pointer-events-none p-12 flex-col justify-between overflow-hidden border-r border-border/10">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-lg shadow-black/30 hover:scale-105 transition-all">
-            <AlgoSphereLogo className="w-5.5 h-5.5" />
+            <AlgoArenaLogo className="w-5.5 h-5.5" />
           </div>
-          <span className="text-lg font-bold tracking-[0.15em] uppercase font-mono text-white">AlgoSphere</span>
+          <span className="text-lg font-bold tracking-[0.15em] uppercase font-mono text-white">AlgoArena</span>
         </div>
         
         <div className="text-left space-y-6">
@@ -243,8 +243,8 @@ const AuthPage = () => {
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
           
           <div className="flex items-center gap-3 mb-8 lg:hidden">
-            <AlgoSphereLogo className="w-6.5 h-6.5" />
-            <span className="text-sm font-bold tracking-[0.1em] uppercase font-mono text-foreground">AlgoSphere</span>
+            <AlgoArenaLogo className="w-6.5 h-6.5" />
+            <span className="text-sm font-bold tracking-[0.1em] uppercase font-mono text-foreground">AlgoArena</span>
           </div>
 
           <h2 className="text-3xl font-extrabold tracking-tight bg-gradient-to-br from-foreground to-foreground/80 bg-clip-text text-transparent text-left">

@@ -112,7 +112,7 @@ async function apiRequest<T>(path: string, options: RequestOptions = {}): Promis
     });
   } catch (error) {
     throw new ApiError(
-      "We couldn't reach AlgoSphere. Check your internet connection or make sure the backend is running, then try again.",
+      "We couldn't reach AlgoArena. Check your internet connection or make sure the backend is running, then try again.",
       {
         status: 0,
         detail: error,

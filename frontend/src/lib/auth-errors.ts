@@ -19,7 +19,7 @@ export const getAuthErrorContent = (error: unknown, mode: AuthMode): AuthErrorCo
   }
 
   if (error.status === 0) {
-    return { title: "Can't reach AlgoSphere", description: "Check connection or backend." };
+    return { title: "Can't reach AlgoArena", description: "Check connection or backend." };
   }
 
   if (mode === "login") {

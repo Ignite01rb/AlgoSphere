@@ -17,7 +17,7 @@ describe("getAuthErrorContent", () => {
     const error = new ApiError("Network down", { status: 0 });
 
     expect(getAuthErrorContent(error, "login")).toEqual({
-      title: "Can't reach AlgoSphere",
+      title: "Can't reach AlgoArena",
       description: "Check connection or backend.",
     });
   });
