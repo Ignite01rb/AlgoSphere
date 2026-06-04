@@ -78,17 +78,19 @@ export const AlgoArenaLogo = ({ className = "w-6 h-6" }: { className?: string })
         <feComposite in="SourceGraphic" in2="blur" operator="over" />
       </filter>
     </defs>
-    <circle cx="12" cy="12" r="10" stroke="url(#authLogoGrad)" strokeWidth="1.2" strokeDasharray="3 3" opacity="0.3" />
-    <path d="M12 2C16 5.5 16 18.5 12 22" stroke="url(#authLogoGrad)" strokeWidth="1" opacity="0.4" />
-    <path d="M12 2C8 5.5 8 18.5 12 22" stroke="url(#authLogoGrad)" strokeWidth="1" opacity="0.4" />
-    <line x1="2" y1="12" x2="22" y2="12" stroke="url(#authLogoGrad)" strokeWidth="1" opacity="0.4" />
-    <path d="M12 7 L17 12 L12 17 L7 12 Z" stroke="url(#authLogoGrad)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M12 2 L12 22" stroke="url(#authLogoGrad)" strokeWidth="1" />
-    <circle cx="12" cy="12" r="2.5" fill="url(#authLogoGrad)" filter="url(#authLogoGlow)" />
-    <circle cx="12" cy="7" r="1.2" fill="currentColor" className="text-foreground" />
-    <circle cx="17" cy="12" r="1.2" fill="currentColor" className="text-foreground" />
-    <circle cx="12" cy="17" r="1.2" fill="currentColor" className="text-foreground" />
-    <circle cx="7" cy="12" r="1.2" fill="currentColor" className="text-foreground" />
+    <path d="M12 2 L21 7 L21 17 L12 22 L3 17 L3 7 Z" stroke="url(#authLogoGrad)" strokeWidth="1.2" strokeLinejoin="round" opacity="0.35" />
+    <path d="M12 3 L20 7.5 L20 16.5 L12 21 L4 16.5 L4 7.5 Z" stroke="url(#authLogoGrad)" strokeWidth="1" strokeLinejoin="round" strokeDasharray="2 2" opacity="0.2" />
+    <line x1="12" y1="6" x2="7" y2="11" stroke="url(#authLogoGrad)" strokeWidth="1" opacity="0.4" />
+    <line x1="12" y1="6" x2="17" y2="11" stroke="url(#authLogoGrad)" strokeWidth="1" opacity="0.4" />
+    <line x1="7" y1="11" x2="12" y2="16" stroke="url(#authLogoGrad)" strokeWidth="1" opacity="0.4" />
+    <line x1="17" y1="11" x2="12" y2="16" stroke="url(#authLogoGrad)" strokeWidth="1" opacity="0.4" />
+    <line x1="12" y1="6" x2="12" y2="16" stroke="url(#authLogoGrad)" strokeWidth="1.2" opacity="0.6" />
+    <path d="M12 6 L17 11 L12 16 L7 11 Z" stroke="url(#authLogoGrad)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="12" cy="11" r="2.5" fill="url(#authLogoGrad)" filter="url(#authLogoGlow)" />
+    <circle cx="12" cy="6" r="1.2" fill="currentColor" className="text-foreground" />
+    <circle cx="17" cy="11" r="1.2" fill="currentColor" className="text-foreground" />
+    <circle cx="12" cy="16" r="1.2" fill="currentColor" className="text-foreground" />
+    <circle cx="7" cy="11" r="1.2" fill="currentColor" className="text-foreground" />
   </svg>
 );
 

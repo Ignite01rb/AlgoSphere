@@ -23,17 +23,19 @@ export const AlgoArenaLogo = ({ className = "w-6 h-6" }: { className?: string })
         <feComposite in="SourceGraphic" in2="blur" operator="over" />
       </filter>
     </defs>
-    <circle cx="12" cy="12" r="10" stroke="url(#landingLogoGrad)" strokeWidth="1.2" strokeDasharray="3 3" opacity="0.3" />
-    <path d="M12 2C16 5.5 16 18.5 12 22" stroke="url(#landingLogoGrad)" strokeWidth="1" opacity="0.4" />
-    <path d="M12 2C8 5.5 8 18.5 12 22" stroke="url(#landingLogoGrad)" strokeWidth="1" opacity="0.4" />
-    <line x1="2" y1="12" x2="22" y2="12" stroke="url(#landingLogoGrad)" strokeWidth="1" opacity="0.4" />
-    <path d="M12 7 L17 12 L12 17 L7 12 Z" stroke="url(#landingLogoGrad)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M12 2 L12 22" stroke="url(#landingLogoGrad)" strokeWidth="1" />
-    <circle cx="12" cy="12" r="2.5" fill="url(#landingLogoGrad)" filter="url(#landingLogoGlow)" />
-    <circle cx="12" cy="7" r="1.2" fill="currentColor" className="text-foreground" />
-    <circle cx="17" cy="12" r="1.2" fill="currentColor" className="text-foreground" />
-    <circle cx="12" cy="17" r="1.2" fill="currentColor" className="text-foreground" />
-    <circle cx="7" cy="12" r="1.2" fill="currentColor" className="text-foreground" />
+    <path d="M12 2 L21 7 L21 17 L12 22 L3 17 L3 7 Z" stroke="url(#landingLogoGrad)" strokeWidth="1.2" strokeLinejoin="round" opacity="0.35" />
+    <path d="M12 3 L20 7.5 L20 16.5 L12 21 L4 16.5 L4 7.5 Z" stroke="url(#landingLogoGrad)" strokeWidth="1" strokeLinejoin="round" strokeDasharray="2 2" opacity="0.2" />
+    <line x1="12" y1="6" x2="7" y2="11" stroke="url(#landingLogoGrad)" strokeWidth="1" opacity="0.4" />
+    <line x1="12" y1="6" x2="17" y2="11" stroke="url(#landingLogoGrad)" strokeWidth="1" opacity="0.4" />
+    <line x1="7" y1="11" x2="12" y2="16" stroke="url(#landingLogoGrad)" strokeWidth="1" opacity="0.4" />
+    <line x1="17" y1="11" x2="12" y2="16" stroke="url(#landingLogoGrad)" strokeWidth="1" opacity="0.4" />
+    <line x1="12" y1="6" x2="12" y2="16" stroke="url(#landingLogoGrad)" strokeWidth="1.2" opacity="0.6" />
+    <path d="M12 6 L17 11 L12 16 L7 11 Z" stroke="url(#landingLogoGrad)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="12" cy="11" r="2.5" fill="url(#landingLogoGrad)" filter="url(#landingLogoGlow)" />
+    <circle cx="12" cy="6" r="1.2" fill="currentColor" className="text-foreground" />
+    <circle cx="17" cy="11" r="1.2" fill="currentColor" className="text-foreground" />
+    <circle cx="12" cy="16" r="1.2" fill="currentColor" className="text-foreground" />
+    <circle cx="7" cy="11" r="1.2" fill="currentColor" className="text-foreground" />
   </svg>
 );
 
@@ -59,116 +61,171 @@ class WebGLErrorBoundary extends Component<{ children: ReactNode; fallback: Reac
   }
 }
 
-// Stunning 3D particle sphere globe with interactive cursor-parallax and color variations
-function ParticleGlobe({ isDark, speed, colorTheme }: { isDark: boolean; speed: number; colorTheme: "amber" | "emerald" | "rose" }) {
-  const pointsRef = useRef<THREE.Points>(null);
+interface NodeItem {
+  id: number;
+  position: [number, number, number];
+  color: string;
+}
 
-  const pointsCount = 1200;
-  const [positions, colors] = useMemo(() => {
-    const pos = new Float32Array(pointsCount * 3);
-    const cols = new Float32Array(pointsCount * 3);
-    
+interface EdgeItem {
+  start: [number, number, number];
+  end: [number, number, number];
+}
+
+// Stunning 3D Algorithm Network Graph representing AlgoArena
+function NetworkGraph3D({ isDark, speed, colorTheme, showWireframe }: { isDark: boolean; speed: number; colorTheme: "amber" | "emerald" | "rose"; showWireframe: boolean }) {
+  const groupRef = useRef<THREE.Group>(null);
+
+  // Generate nodes and edges
+  const { nodes, edges, packets } = useMemo(() => {
+    const nodeCount = 24;
+    const generatedNodes: NodeItem[] = [];
+    const generatedEdges: EdgeItem[] = [];
+    const generatedPackets: { edgeIndex: number; progress: number; speed: number }[] = [];
+
     let baseColorStr = "#f59e0b"; // amber
     let secondaryColorStr = "#f43f5e"; // rose
-    let tertiaryColorStr = "#f97316"; // orange
     
     if (colorTheme === "emerald") {
       baseColorStr = isDark ? "#10b981" : "#065f46"; 
-      secondaryColorStr = isDark ? "#3b82f6" : "#1e3a8a"; 
-      tertiaryColorStr = isDark ? "#06b6d4" : "#155e75"; 
+      secondaryColorStr = isDark ? "#06b6d4" : "#155e75"; 
     } else if (colorTheme === "rose") {
       baseColorStr = isDark ? "#f43f5e" : "#9f1239"; 
-      secondaryColorStr = isDark ? "#a855f7" : "#581c87"; 
-      tertiaryColorStr = isDark ? "#ec4899" : "#831843"; 
+      secondaryColorStr = isDark ? "#ec4899" : "#831843"; 
     } else { // amber
       baseColorStr = isDark ? "#f59e0b" : "#78350f"; 
-      secondaryColorStr = isDark ? "#f43f5e" : "#9d174d"; 
-      tertiaryColorStr = isDark ? "#f97316" : "#9a3412"; 
+      secondaryColorStr = isDark ? "#f97316" : "#9a3412"; 
     }
 
     const color1 = new THREE.Color(baseColorStr);
     const color2 = new THREE.Color(secondaryColorStr);
-    const color3 = new THREE.Color(tertiaryColorStr);
 
-    for (let i = 0; i < pointsCount; i++) {
-      const theta = Math.acos(1 - 2 * (i / pointsCount));
+    // Position nodes spherically
+    for (let i = 0; i < nodeCount; i++) {
+      const theta = Math.acos(1 - 2 * (i / nodeCount));
       const phi = Math.PI * (1 + Math.sqrt(5)) * i;
-      
-      const r = 2.1 + Math.random() * 0.12; 
-      pos[i * 3] = r * Math.sin(theta) * Math.cos(phi);
-      pos[i * 3 + 1] = r * Math.sin(theta) * Math.sin(phi);
-      pos[i * 3 + 2] = r * Math.cos(theta);
+      const radius = 2.0;
 
-      const mixRatio = (pos[i * 3 + 1] + 2.2) / 4.4;
-      const c = new THREE.Color().copy(color1).lerp(mixRatio > 0.5 ? color2 : color3, Math.min(Math.max(mixRatio, 0), 1));
-      cols[i * 3] = c.r;
-      cols[i * 3 + 1] = c.g;
-      cols[i * 3 + 2] = c.b;
+      const x = radius * Math.sin(theta) * Math.cos(phi);
+      const y = radius * Math.sin(theta) * Math.sin(phi);
+      const z = radius * Math.cos(theta);
+
+      const mixRatio = (y + radius) / (2 * radius);
+      const col = color1.clone().lerp(color2, mixRatio).getStyle();
+
+      generatedNodes.push({
+        id: i,
+        position: [x, y, z],
+        color: col
+      });
     }
-    return [pos, cols];
+
+    // Connect nodes (edges) if they are close to each other
+    for (let i = 0; i < nodeCount; i++) {
+      for (let j = i + 1; j < nodeCount; j++) {
+        const dx = generatedNodes[i].position[0] - generatedNodes[j].position[0];
+        const dy = generatedNodes[i].position[1] - generatedNodes[j].position[1];
+        const dz = generatedNodes[i].position[2] - generatedNodes[j].position[2];
+        const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+        // Maximum distance to connect
+        if (dist < 1.7) {
+          generatedEdges.push({
+            start: generatedNodes[i].position,
+            end: generatedNodes[j].position
+          });
+        }
+      }
+    }
+
+    // Generate packets traversing the edges
+    const packetCount = 12;
+    for (let i = 0; i < packetCount; i++) {
+      if (generatedEdges.length > 0) {
+        generatedPackets.push({
+          edgeIndex: Math.floor(Math.random() * generatedEdges.length),
+          progress: Math.random(),
+          speed: 0.15 + Math.random() * 0.2
+        });
+      }
+    }
+
+    return { nodes: generatedNodes, edges: generatedEdges, packets: generatedPackets };
   }, [isDark, colorTheme]);
 
-  // Track cursor pointer to create smooth 3D tilt interaction
-  useFrame((state) => {
-    if (pointsRef.current) {
-      const targetY = state.clock.getElapsedTime() * 0.09 * speed + state.pointer.x * 0.45;
-      const targetX = Math.sin(state.clock.getElapsedTime() * 0.05) * 0.1 + state.pointer.y * -0.45;
+  const packetRefs = useRef<THREE.Mesh[]>([]);
 
-      pointsRef.current.rotation.y = THREE.MathUtils.lerp(pointsRef.current.rotation.y, targetY, 0.05);
-      pointsRef.current.rotation.x = THREE.MathUtils.lerp(pointsRef.current.rotation.x, targetX, 0.05);
+  useFrame((state) => {
+    if (groupRef.current) {
+      const targetY = state.clock.getElapsedTime() * 0.08 * speed + state.pointer.x * 0.35;
+      const targetX = Math.sin(state.clock.getElapsedTime() * 0.04) * 0.1 + state.pointer.y * -0.35;
+
+      groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetY, 0.05);
+      groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetX, 0.05);
     }
+
+    // Animate packets traversing along the edges
+    packets.forEach((p, idx) => {
+      const mesh = packetRefs.current[idx];
+      if (mesh) {
+        p.progress += state.delta * p.speed * speed;
+        if (p.progress > 1.0) {
+          p.progress = 0;
+          p.edgeIndex = Math.floor(Math.random() * edges.length);
+        }
+
+        const edge = edges[p.edgeIndex];
+        if (edge) {
+          const x = THREE.MathUtils.lerp(edge.start[0], edge.end[0], p.progress);
+          const y = THREE.MathUtils.lerp(edge.start[1], edge.end[1], p.progress);
+          const z = THREE.MathUtils.lerp(edge.start[2], edge.end[2], p.progress);
+          mesh.position.set(x, y, z);
+        }
+      }
+    });
   });
 
   return (
-    <points ref={pointsRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          args={[positions, 3]}
-        />
-        <bufferAttribute
-          attach="attributes-color"
-          args={[colors, 3]}
-        />
-      </bufferGeometry>
-      <pointsMaterial
-        size={0.045}
-        vertexColors
-        transparent
-        opacity={isDark ? 0.80 : 0.55}
-        sizeAttenuation={true}
-      />
-    </points>
-  );
-}
+    <group ref={groupRef}>
+      {/* Draw Nodes */}
+      {nodes.map((node) => (
+        <mesh key={node.id} position={node.position}>
+          <sphereGeometry args={[0.075, 16, 16]} />
+          <meshBasicMaterial color={node.color} />
+        </mesh>
+      ))}
 
-// Spinning wireframe core (Geometric Core) that complements stardust globe
-function GeometricCore({ isDark, speed, colorTheme, show }: { isDark: boolean; speed: number; colorTheme: "amber" | "emerald" | "rose"; show: boolean }) {
-  const meshRef = useRef<THREE.Mesh>(null);
-  
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y = -state.clock.getElapsedTime() * 0.14 * speed;
-      meshRef.current.rotation.x = state.clock.getElapsedTime() * 0.07 * speed;
-    }
-  });
+      {/* Draw Edges */}
+      {showWireframe && edges.map((edge, idx) => {
+        const points = [new THREE.Vector3(...edge.start), new THREE.Vector3(...edge.end)];
+        const lineGeom = new THREE.BufferGeometry().setFromPoints(points);
+        return (
+          <line key={idx} geometry={lineGeom}>
+            <lineBasicMaterial
+              color={isDark ? "#ffffff" : "#000000"}
+              transparent
+              opacity={isDark ? 0.08 : 0.12}
+            />
+          </line>
+        );
+      })}
 
-  if (!show) return null;
-
-  let wireColor = isDark ? "#f59e0b" : "#78350f";
-  if (colorTheme === "emerald") wireColor = isDark ? "#10b981" : "#065f46";
-  if (colorTheme === "rose") wireColor = isDark ? "#f43f5e" : "#9f1239";
-
-  return (
-    <mesh ref={meshRef}>
-      <icosahedronGeometry args={[1.25, 1]} />
-      <meshBasicMaterial 
-        color={wireColor} 
-        wireframe 
-        transparent 
-        opacity={isDark ? 0.18 : 0.28} 
-      />
-    </mesh>
+      {/* Draw Traversing Packets */}
+      {packets.map((_, idx) => (
+        <mesh
+          key={idx}
+          ref={(el) => {
+            if (el) packetRefs.current[idx] = el;
+          }}
+        >
+          <sphereGeometry args={[0.035, 8, 8]} />
+          <meshBasicMaterial
+            color={colorTheme === "emerald" ? "#38bdf8" : colorTheme === "rose" ? "#ec4899" : "#fbbf24"}
+            toneMapped={false}
+          />
+        </mesh>
+      ))}
+    </group>
   );
 }
 
@@ -182,9 +239,8 @@ function Scene({ isDark, speed, colorTheme, showWireframe }: { isDark: boolean; 
       <ambientLight intensity={isDark ? 0.3 : 0.5} />
       <pointLight position={[10, 10, 10]} intensity={isDark ? 1.6 : 2.0} color={sparkColor} />
       <pointLight position={[-10, -10, -10]} intensity={isDark ? 1.2 : 1.4} color={isDark ? "#f43f5e" : "#9d174d"} />
-      <ParticleGlobe isDark={isDark} speed={speed} colorTheme={colorTheme} />
-      <GeometricCore isDark={isDark} speed={speed} colorTheme={colorTheme} show={showWireframe} />
-      <Sparkles count={isDark ? 30 : 15} scale={6} size={2.2} speed={0.2 * speed} opacity={isDark ? 0.4 : 0.28} color={sparkColor} />
+      <NetworkGraph3D isDark={isDark} speed={speed} colorTheme={colorTheme} showWireframe={showWireframe} />
+      <Sparkles count={isDark ? 40 : 20} scale={6} size={2.2} speed={0.2 * speed} opacity={isDark ? 0.4 : 0.28} color={sparkColor} />
       <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={0.2 * speed} />
     </>
   );
