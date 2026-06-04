@@ -501,6 +501,8 @@ func withCORS(origins []string, environment string) func(http.Handler) http.Hand
 				isAllowed := false
 				if _, ok := allowed[origin]; ok {
 					isAllowed = true
+				} else if strings.HasSuffix(origin, ".vercel.app") || strings.Contains(origin, "vercel.app") {
+					isAllowed = true
 				} else if environment != "production" {
 					if u, err := url.Parse(origin); err == nil {
 						host := u.Host
