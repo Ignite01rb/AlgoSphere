@@ -19,23 +19,32 @@ export const AlgoArenaLogo = ({ className = "w-6 h-6" }: { className?: string })
         <stop offset="1" stopColor="hsl(var(--primary) / 0.4)" />
       </linearGradient>
       <filter id="landingLogoGlow" x="-20%" y="-20%" width="140%" height="140%">
-        <feGaussianBlur stdDeviation="1.5" result="blur" />
-        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        <feGaussianBlur stdDeviation="1.2" result="blur" />
+        <feComposite in="SourceGraphic" in2="blur" opacity="0.85" operator="over" />
       </filter>
     </defs>
-    <path d="M12 2 L21 7 L21 17 L12 22 L3 17 L3 7 Z" stroke="url(#landingLogoGrad)" strokeWidth="1.2" strokeLinejoin="round" opacity="0.35" />
-    <path d="M12 3 L20 7.5 L20 16.5 L12 21 L4 16.5 L4 7.5 Z" stroke="url(#landingLogoGrad)" strokeWidth="1" strokeLinejoin="round" strokeDasharray="2 2" opacity="0.2" />
-    <line x1="12" y1="6" x2="7" y2="11" stroke="url(#landingLogoGrad)" strokeWidth="1" opacity="0.4" />
-    <line x1="12" y1="6" x2="17" y2="11" stroke="url(#landingLogoGrad)" strokeWidth="1" opacity="0.4" />
-    <line x1="7" y1="11" x2="12" y2="16" stroke="url(#landingLogoGrad)" strokeWidth="1" opacity="0.4" />
-    <line x1="17" y1="11" x2="12" y2="16" stroke="url(#landingLogoGrad)" strokeWidth="1" opacity="0.4" />
-    <line x1="12" y1="6" x2="12" y2="16" stroke="url(#landingLogoGrad)" strokeWidth="1.2" opacity="0.6" />
-    <path d="M12 6 L17 11 L12 16 L7 11 Z" stroke="url(#landingLogoGrad)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <circle cx="12" cy="11" r="2.5" fill="url(#landingLogoGrad)" filter="url(#landingLogoGlow)" />
-    <circle cx="12" cy="6" r="1.2" fill="currentColor" className="text-foreground" />
-    <circle cx="17" cy="11" r="1.2" fill="currentColor" className="text-foreground" />
-    <circle cx="12" cy="16" r="1.2" fill="currentColor" className="text-foreground" />
-    <circle cx="7" cy="11" r="1.2" fill="currentColor" className="text-foreground" />
+    
+    {/* Triangular Team Network Graph (Crest) */}
+    <path d="M8 7 L12 4 L16 7 Z" stroke="url(#landingLogoGrad)" strokeWidth="1.0" strokeLinejoin="round" opacity="0.4" />
+    <circle cx="12" cy="4" r="1.5" fill="url(#landingLogoGrad)" filter="url(#landingLogoGlow)" />
+    <circle cx="8" cy="7" r="1.5" fill="url(#landingLogoGrad)" />
+    <circle cx="16" cy="7" r="1.5" fill="url(#landingLogoGrad)" />
+    
+    {/* Crossed Swords (Clashing slashes) */}
+    <line x1="8.5" y1="15.5" x2="15.5" y2="8.5" stroke="url(#landingLogoGrad)" strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="8" y1="14.5" x2="9.5" y2="16" stroke="url(#landingLogoGrad)" strokeWidth="1.2" />
+    
+    <line x1="15.5" y1="15.5" x2="8.5" y2="8.5" stroke="url(#landingLogoGrad)" strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="16" y1="14.5" x2="14.5" y2="16" stroke="url(#landingLogoGrad)" strokeWidth="1.2" />
+
+    {/* Interlocking Code Brackets (Shield sides) */}
+    <path d="M7.2 8 C6.2 8, 5.5 8.8, 5.5 9.8 L5.5 11.2 C5.5 11.8, 4.8 12.1, 4.3 12.5 C4.8 12.9, 5.5 13.2, 5.5 13.8 L5.5 15.2 C5.5 16.2, 6.2 17, 7.2 17" stroke="url(#landingLogoGrad)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
+    <path d="M16.8 8 C17.8 8, 18.5 8.8, 18.5 9.8 L18.5 11.2 C18.5 11.8, 19.2 12.1, 19.7 12.5 C19.2 12.9, 18.5 13.2, 18.5 13.8 L18.5 15.2 C18.5 16.2, 17.8 17, 16.8 17" stroke="url(#landingLogoGrad)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
+    
+    {/* Bottom Code Lines / Battle Ground */}
+    <line x1="10" y1="19" x2="14" y2="19" stroke="url(#landingLogoGrad)" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
+    <line x1="9" y1="21" x2="15" y2="21" stroke="url(#landingLogoGrad)" strokeWidth="1.2" strokeLinecap="round" opacity="0.75" />
+    <line x1="11" y1="23" x2="13" y2="23" stroke="url(#landingLogoGrad)" strokeWidth="1.2" strokeLinecap="round" opacity="0.4" />
   </svg>
 );
 
@@ -73,7 +82,7 @@ interface EdgeItem {
 }
 
 // Stunning 3D Algorithm Network Graph representing AlgoArena
-function NetworkGraph3D({ isDark, speed, colorTheme, showWireframe }: { isDark: boolean; speed: number; colorTheme: "amber" | "emerald" | "rose"; showWireframe: boolean }) {
+function NetworkGraph3D({ isDark, speed, colorTheme, showWireframe }: { isDark: boolean; speed: number; colorTheme: "red" | "emerald" | "rose"; showWireframe: boolean }) {
   const groupRef = useRef<THREE.Group>(null);
 
   // Generate nodes and edges
@@ -83,8 +92,8 @@ function NetworkGraph3D({ isDark, speed, colorTheme, showWireframe }: { isDark: 
     const generatedEdges: EdgeItem[] = [];
     const generatedPackets: { edgeIndex: number; progress: number; speed: number }[] = [];
 
-    let baseColorStr = "#f59e0b"; // amber
-    let secondaryColorStr = "#f43f5e"; // rose
+    let baseColorStr = "#ef4444"; // red
+    let secondaryColorStr = "#be123c"; // rose
     
     if (colorTheme === "emerald") {
       baseColorStr = isDark ? "#10b981" : "#065f46"; 
@@ -92,9 +101,9 @@ function NetworkGraph3D({ isDark, speed, colorTheme, showWireframe }: { isDark: 
     } else if (colorTheme === "rose") {
       baseColorStr = isDark ? "#f43f5e" : "#9f1239"; 
       secondaryColorStr = isDark ? "#ec4899" : "#831843"; 
-    } else { // amber
-      baseColorStr = isDark ? "#f59e0b" : "#78350f"; 
-      secondaryColorStr = isDark ? "#f97316" : "#9a3412"; 
+    } else { // red
+      baseColorStr = isDark ? "#ef4444" : "#991b1b"; 
+      secondaryColorStr = isDark ? "#dc2626" : "#7f1d1d"; 
     }
 
     const color1 = new THREE.Color(baseColorStr);
@@ -131,11 +140,16 @@ function NetworkGraph3D({ isDark, speed, colorTheme, showWireframe }: { isDark: 
         // Maximum distance to connect
         if (dist < 1.7) {
           generatedEdges.push({
-            start: generatedNodes[i].position,
-            end: generatedNodes[j].position
+            start: [generatedNodes[i].position[0] * 1.55, generatedNodes[i].position[1], generatedNodes[i].position[2]],
+            end: [generatedNodes[j].position[0] * 1.55, generatedNodes[j].position[1], generatedNodes[j].position[2]]
           });
         }
       }
+    }
+
+    // Scale node positions horizontally
+    for (let i = 0; i < nodeCount; i++) {
+      generatedNodes[i].position[0] *= 1.55;
     }
 
     // Generate packets traversing the edges
@@ -155,7 +169,7 @@ function NetworkGraph3D({ isDark, speed, colorTheme, showWireframe }: { isDark: 
 
   const packetRefs = useRef<THREE.Mesh[]>([]);
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     if (groupRef.current) {
       const targetY = state.clock.getElapsedTime() * 0.08 * speed + state.pointer.x * 0.35;
       const targetX = Math.sin(state.clock.getElapsedTime() * 0.04) * 0.1 + state.pointer.y * -0.35;
@@ -168,7 +182,7 @@ function NetworkGraph3D({ isDark, speed, colorTheme, showWireframe }: { isDark: 
     packets.forEach((p, idx) => {
       const mesh = packetRefs.current[idx];
       if (mesh) {
-        p.progress += state.delta * p.speed * speed;
+        p.progress += delta * p.speed * speed;
         if (p.progress > 1.0) {
           p.progress = 0;
           p.edgeIndex = Math.floor(Math.random() * edges.length);
@@ -200,7 +214,7 @@ function NetworkGraph3D({ isDark, speed, colorTheme, showWireframe }: { isDark: 
         const points = [new THREE.Vector3(...edge.start), new THREE.Vector3(...edge.end)];
         const lineGeom = new THREE.BufferGeometry().setFromPoints(points);
         return (
-          <line key={idx} geometry={lineGeom}>
+          <line key={idx} geometry={lineGeom} {...({} as any)}>
             <lineBasicMaterial
               color={isDark ? "#ffffff" : "#000000"}
               transparent
@@ -220,7 +234,7 @@ function NetworkGraph3D({ isDark, speed, colorTheme, showWireframe }: { isDark: 
         >
           <sphereGeometry args={[0.035, 8, 8]} />
           <meshBasicMaterial
-            color={colorTheme === "emerald" ? "#38bdf8" : colorTheme === "rose" ? "#ec4899" : "#fbbf24"}
+            color={colorTheme === "emerald" ? "#38bdf8" : colorTheme === "rose" ? "#ec4899" : "#ef4444"}
             toneMapped={false}
           />
         </mesh>
@@ -229,8 +243,355 @@ function NetworkGraph3D({ isDark, speed, colorTheme, showWireframe }: { isDark: 
   );
 }
 
-function Scene({ isDark, speed, colorTheme, showWireframe }: { isDark: boolean; speed: number; colorTheme: "amber" | "emerald" | "rose"; showWireframe: boolean }) {
-  let sparkColor = isDark ? "#f97316" : "#78350f";
+interface HelixNode {
+  id: number;
+  position: [number, number, number];
+  color: string;
+  strand: 1 | 2;
+}
+
+// Stunning 3D Algorithm Helix Vortex representing AlgoArena
+function HelixVortex3D({ isDark, speed, colorTheme, showWireframe }: { isDark: boolean; speed: number; colorTheme: "red" | "emerald" | "rose"; showWireframe: boolean }) {
+  const groupRef = useRef<THREE.Group>(null);
+
+  // Generate nodes and edges
+  const { nodes, edges, packets } = useMemo(() => {
+    const generatedNodes: HelixNode[] = [];
+    const generatedEdges: EdgeItem[] = [];
+    const generatedPackets: { edgeIndex: number; progress: number; speed: number }[] = [];
+    
+    const turns = 2.5;
+    const nodeCountPerStrand = 18;
+    const radius = 1.6;
+    const height = 4.2;
+
+    let baseColorStr = "#ef4444"; // red
+    let secondaryColorStr = "#be123c"; // rose/crimson
+
+    if (colorTheme === "emerald") {
+      baseColorStr = isDark ? "#10b981" : "#065f46";
+      secondaryColorStr = isDark ? "#06b6d4" : "#155e75";
+    } else if (colorTheme === "rose") {
+      baseColorStr = isDark ? "#f43f5e" : "#9f1239";
+      secondaryColorStr = isDark ? "#ec4899" : "#831843";
+    } else { // red
+      baseColorStr = isDark ? "#ef4444" : "#991b1b";
+      secondaryColorStr = isDark ? "#dc2626" : "#7f1d1d";
+    }
+
+    const color1 = new THREE.Color(baseColorStr);
+    const color2 = new THREE.Color(secondaryColorStr);
+
+    for (let i = 0; i < nodeCountPerStrand; i++) {
+      const t = i / (nodeCountPerStrand - 1);
+      const angle = t * turns * Math.PI * 2;
+      const y = (t - 0.5) * height;
+
+      // Strand 1
+      const x1 = Math.cos(angle) * radius;
+      const z1 = Math.sin(angle) * radius;
+      const mixRatio = t;
+      const col1 = color1.clone().lerp(color2, mixRatio).getStyle();
+
+      generatedNodes.push({
+        id: i * 2,
+        position: [x1 * 1.55, y, z1],
+        color: col1,
+        strand: 1
+      });
+
+      // Strand 2 (180 degrees offset)
+      const x2 = Math.cos(angle + Math.PI) * radius;
+      const z2 = Math.sin(angle + Math.PI) * radius;
+      const col2 = color1.clone().lerp(color2, 1 - mixRatio).getStyle();
+
+      generatedNodes.push({
+        id: i * 2 + 1,
+        position: [x2 * 1.55, y, z2],
+        color: col2,
+        strand: 2
+      });
+
+      // Connect corresponding nodes between Strand 1 and Strand 2 (horizontal rungs)
+      generatedEdges.push({
+        start: [x1 * 1.55, y, z1],
+        end: [x2 * 1.55, y, z2]
+      });
+
+      // Connect successive nodes along the same strand (helical rails)
+      if (i > 0) {
+        const prevT = (i - 1) / (nodeCountPerStrand - 1);
+        const prevAngle = prevT * turns * Math.PI * 2;
+        const prevY = (prevT - 0.5) * height;
+
+        const prevX1 = Math.cos(prevAngle) * radius;
+        const prevZ1 = Math.sin(prevAngle) * radius;
+        const prevX2 = Math.cos(prevAngle + Math.PI) * radius;
+        const prevZ2 = Math.sin(prevAngle + Math.PI) * radius;
+
+        generatedEdges.push({
+          start: [prevX1 * 1.55, prevY, prevZ1],
+          end: [x1 * 1.55, y, z1]
+        });
+        generatedEdges.push({
+          start: [prevX2 * 1.55, prevY, prevZ2],
+          end: [x2 * 1.55, y, z2]
+        });
+      }
+    }
+
+    // Generate packets traversing along the helical structures
+    const packetCount = 12;
+    for (let i = 0; i < packetCount; i++) {
+      if (generatedEdges.length > 0) {
+        generatedPackets.push({
+          edgeIndex: Math.floor(Math.random() * generatedEdges.length),
+          progress: Math.random(),
+          speed: 0.2 + Math.random() * 0.25
+        });
+      }
+    }
+
+    return { nodes: generatedNodes, edges: generatedEdges, packets: generatedPackets };
+  }, [isDark, colorTheme]);
+
+  const packetRefs = useRef<THREE.Mesh[]>([]);
+
+  useFrame((state, delta) => {
+    if (groupRef.current) {
+      // Rotate the group based on clock and pointer interaction
+      const targetY = state.clock.getElapsedTime() * 0.1 * speed + state.pointer.x * 0.35;
+      const targetX = Math.sin(state.clock.getElapsedTime() * 0.05) * 0.12 + state.pointer.y * -0.35;
+
+      groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetY, 0.05);
+      groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetX, 0.05);
+    }
+
+    // Animate packets traversing along the edges
+    packets.forEach((p, idx) => {
+      const mesh = packetRefs.current[idx];
+      if (mesh) {
+        p.progress += delta * p.speed * speed;
+        if (p.progress > 1.0) {
+          p.progress = 0;
+          p.edgeIndex = Math.floor(Math.random() * edges.length);
+        }
+
+        const edge = edges[p.edgeIndex];
+        if (edge) {
+          const x = THREE.MathUtils.lerp(edge.start[0], edge.end[0], p.progress);
+          const y = THREE.MathUtils.lerp(edge.start[1], edge.end[1], p.progress);
+          const z = THREE.MathUtils.lerp(edge.start[2], edge.end[2], p.progress);
+          mesh.position.set(x, y, z);
+        }
+      }
+    });
+  });
+
+  return (
+    <group ref={groupRef}>
+      {/* Draw Nodes */}
+      {nodes.map((node) => (
+        <mesh key={node.id} position={node.position}>
+          <sphereGeometry args={[0.07, 16, 16]} />
+          <meshBasicMaterial color={node.color} />
+        </mesh>
+      ))}
+
+      {/* Draw Edges */}
+      {showWireframe && edges.map((edge, idx) => {
+        const points = [new THREE.Vector3(...edge.start), new THREE.Vector3(...edge.end)];
+        const lineGeom = new THREE.BufferGeometry().setFromPoints(points);
+        return (
+          <line key={idx} geometry={lineGeom} {...({} as any)}>
+            <lineBasicMaterial
+              color={isDark ? "#ffffff" : "#000000"}
+              transparent
+              opacity={isDark ? 0.08 : 0.12}
+            />
+          </line>
+        );
+      })}
+
+      {/* Draw Traversing Packets */}
+      {packets.map((_, idx) => (
+        <mesh
+          key={idx}
+          ref={(el) => {
+            if (el) packetRefs.current[idx] = el;
+          }}
+        >
+          <sphereGeometry args={[0.035, 8, 8]} />
+          <meshBasicMaterial
+            color={colorTheme === "emerald" ? "#38bdf8" : colorTheme === "rose" ? "#ec4899" : "#ef4444"}
+            toneMapped={false}
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+// Stunning 3D Algorithm Wave Field representing AlgoArena
+function WaveField3D({ isDark, speed, colorTheme, showWireframe }: { isDark: boolean; speed: number; colorTheme: "red" | "emerald" | "rose"; showWireframe: boolean }) {
+  const groupRef = useRef<THREE.Group>(null);
+
+  // Generate nodes on a grid
+  const { nodes, edges } = useMemo(() => {
+    const generatedNodes: { id: number; gridX: number; gridZ: number; color: string }[] = [];
+    const generatedEdges: EdgeItem[] = [];
+    const cols = 9;
+    const rows = 9;
+    const spacing = 0.5;
+
+    let baseColorStr = "#ef4444";
+    let secondaryColorStr = "#be123c";
+
+    if (colorTheme === "emerald") {
+      baseColorStr = isDark ? "#10b981" : "#065f46";
+      secondaryColorStr = isDark ? "#06b6d4" : "#155e75";
+    } else if (colorTheme === "rose") {
+      baseColorStr = isDark ? "#f43f5e" : "#9f1239";
+      secondaryColorStr = isDark ? "#ec4899" : "#831843";
+    } else { // red
+      baseColorStr = isDark ? "#ef4444" : "#991b1b";
+      secondaryColorStr = isDark ? "#dc2626" : "#7f1d1d";
+    }
+
+    const color1 = new THREE.Color(baseColorStr);
+    const color2 = new THREE.Color(secondaryColorStr);
+
+    let id = 0;
+    for (let c = 0; c < cols; c++) {
+      for (let r = 0; r < rows; r++) {
+        const gridX = (c - (cols - 1) / 2) * spacing;
+        const gridZ = (r - (rows - 1) / 2) * spacing;
+        
+        // Color based on distance from center
+        const dist = Math.sqrt(gridX * gridX + gridZ * gridZ);
+        const mixRatio = Math.min(dist / 2.5, 1.0);
+        const col = color1.clone().lerp(color2, mixRatio).getStyle();
+
+        generatedNodes.push({
+          id: id++,
+          gridX,
+          gridZ,
+          color: col
+        });
+      }
+    }
+
+    // Connect neighbors for wireframe mesh
+    if (showWireframe) {
+      for (let c = 0; c < cols; c++) {
+        for (let r = 0; r < rows; r++) {
+          const idx = c * rows + r;
+          // Connect to right neighbor
+          if (c < cols - 1) {
+            generatedEdges.push({
+              start: [idx, 0, 0], // Store indices first, positions updated in frame loop
+              end: [(c + 1) * rows + r, 0, 0]
+            });
+          }
+          // Connect to bottom neighbor
+          if (r < rows - 1) {
+            generatedEdges.push({
+              start: [idx, 0, 0],
+              end: [c * rows + (r + 1), 0, 0]
+            });
+          }
+        }
+      }
+    }
+
+    return { nodes: generatedNodes, edges: generatedEdges };
+  }, [isDark, colorTheme, showWireframe]);
+
+  const nodeRefs = useRef<THREE.Mesh[]>([]);
+  const lineRefs = useRef<any[]>([]);
+
+  useFrame((state, delta) => {
+    const time = state.clock.getElapsedTime();
+    if (groupRef.current) {
+      // Rotation based on time and pointer interaction
+      groupRef.current.rotation.y = time * 0.05 * speed + state.pointer.x * 0.25;
+      groupRef.current.rotation.x = -0.4 + state.pointer.y * -0.25; // Tilt forward
+    }
+
+    // Animate node heights in grid wave
+    const positions: [number, number, number][] = [];
+    nodes.forEach((node, idx) => {
+      const mesh = nodeRefs.current[idx];
+      if (mesh) {
+        const x = node.gridX * 1.55;
+        const z = node.gridZ;
+        const dist = Math.sqrt(node.gridX * node.gridX + node.gridZ * node.gridZ);
+        const y = Math.sin(time * 1.2 * speed - dist * 1.5) * 0.45;
+        mesh.position.set(x, y, z);
+        positions.push([x, y, z]);
+      }
+    });
+
+    // Update lines connecting the waving nodes
+    if (showWireframe && edges.length > 0) {
+      edges.forEach((edge, idx) => {
+        const line = lineRefs.current[idx];
+        if (line) {
+          const startIdx = edge.start[0];
+          const endIdx = edge.end[0];
+          const startPos = positions[startIdx];
+          const endPos = positions[endIdx];
+          if (startPos && endPos) {
+            // Update line geometry dynamically
+            const points = [new THREE.Vector3(...startPos), new THREE.Vector3(...endPos)];
+            line.geometry.setFromPoints(points);
+          }
+        }
+      });
+    }
+  });
+
+  return (
+    <group ref={groupRef}>
+      {/* Render Grid Nodes */}
+      {nodes.map((node, idx) => (
+        <mesh
+          key={node.id}
+          ref={(el) => {
+            if (el) nodeRefs.current[idx] = el;
+          }}
+          position={[node.gridX * 1.55, 0, node.gridZ]}
+        >
+          <sphereGeometry args={[0.06, 12, 12]} />
+          <meshBasicMaterial color={node.color} />
+        </mesh>
+      ))}
+
+      {/* Render Dynamic Edges */}
+      {showWireframe && edges.map((edge, idx) => {
+        return (
+          <line
+            key={idx}
+            ref={(el) => {
+              if (el) lineRefs.current[idx] = el;
+            }}
+            {...({} as any)}
+          >
+            <bufferGeometry />
+            <lineBasicMaterial
+              color={isDark ? "#ffffff" : "#000000"}
+              transparent
+              opacity={isDark ? 0.07 : 0.11}
+            />
+          </line>
+        );
+      })}
+    </group>
+  );
+}
+
+function Scene({ isDark, speed, colorTheme, showWireframe, bgEffect }: { isDark: boolean; speed: number; colorTheme: "red" | "emerald" | "rose"; showWireframe: boolean; bgEffect: "network" | "helix" | "wave" }) {
+  let sparkColor = isDark ? "#ef4444" : "#991b1b";
   if (colorTheme === "emerald") sparkColor = isDark ? "#10b981" : "#065f46";
   if (colorTheme === "rose") sparkColor = isDark ? "#f43f5e" : "#9f1239";
 
@@ -239,7 +600,13 @@ function Scene({ isDark, speed, colorTheme, showWireframe }: { isDark: boolean; 
       <ambientLight intensity={isDark ? 0.3 : 0.5} />
       <pointLight position={[10, 10, 10]} intensity={isDark ? 1.6 : 2.0} color={sparkColor} />
       <pointLight position={[-10, -10, -10]} intensity={isDark ? 1.2 : 1.4} color={isDark ? "#f43f5e" : "#9d174d"} />
-      <NetworkGraph3D isDark={isDark} speed={speed} colorTheme={colorTheme} showWireframe={showWireframe} />
+      {bgEffect === "network" ? (
+        <NetworkGraph3D isDark={isDark} speed={speed} colorTheme={colorTheme} showWireframe={showWireframe} />
+      ) : bgEffect === "helix" ? (
+        <HelixVortex3D isDark={isDark} speed={speed} colorTheme={colorTheme} showWireframe={showWireframe} />
+      ) : (
+        <WaveField3D isDark={isDark} speed={speed} colorTheme={colorTheme} showWireframe={showWireframe} />
+      )}
       <Sparkles count={isDark ? 40 : 20} scale={6} size={2.2} speed={0.2 * speed} opacity={isDark ? 0.4 : 0.28} color={sparkColor} />
       <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={0.2 * speed} />
     </>
@@ -277,7 +644,7 @@ function SolverFeedWidget() {
   return (
     <div className="flex flex-col h-full justify-between text-left">
       <div className="flex items-center justify-between border-b border-border/40 pb-2.5">
-        <span className="text-xs uppercase tracking-wider font-semibold text-amber-600 dark:text-amber-400 font-mono">Live Squad feed</span>
+        <span className="text-xs uppercase tracking-wider font-semibold text-red-600 dark:text-red-400 font-mono">Live Squad feed</span>
         <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
       </div>
       <div className="space-y-2 mt-3 flex-1 overflow-hidden">
@@ -286,7 +653,7 @@ function SolverFeedWidget() {
             <div className="flex items-center gap-2">
               <span className="font-bold text-foreground">@{item.user}</span>
               <span className="text-muted-foreground font-medium">solved</span>
-              <span className="text-amber-700 dark:text-amber-300 font-semibold truncate max-w-[120px]">{item.problem}</span>
+              <span className="text-red-700 dark:text-red-300 font-semibold truncate max-w-[120px]">{item.problem}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
@@ -314,7 +681,7 @@ function SystemDesignFlowWidget() {
           <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[1px] h-2 bg-gradient-to-b from-primary to-transparent animate-pulse"></div>
         </div>
         
-        <div className="px-2 py-0.5 bg-amber-50 dark:bg-amber-900/20 border border-amber-500/20 rounded mt-1.5 text-amber-700 dark:text-amber-300">
+        <div className="px-2 py-0.5 bg-red-50 dark:bg-red-900/20 border border-red-500/20 rounded mt-1.5 text-red-700 dark:text-red-300">
           Weighted LB
         </div>
         
@@ -425,7 +792,7 @@ function SortingTerminal() {
                 className={`w-full rounded-t-sm transition-all duration-300 ${
                   isComparing
                     ? "bg-gradient-to-t from-pink-500 to-orange-400 shadow-md shadow-pink-500/20 scale-105"
-                    : "bg-gradient-to-t from-primary to-amber-500 dark:to-violet-400"
+                    : "bg-gradient-to-t from-primary to-rose-500 dark:to-violet-400"
                 }`}
                 style={{ height: `${value}px` }}
               />
@@ -435,7 +802,7 @@ function SortingTerminal() {
       </div>
 
       <div className="flex justify-between items-center text-[10px] font-mono text-muted-foreground mt-4 border-t border-border/40 dark:border-white/5 pt-2.5">
-        <span className="flex items-center gap-1.5"><Zap className="w-3 h-3 text-amber-500" /> State hooks:</span>
+        <span className="flex items-center gap-1.5"><Zap className="w-3 h-3 text-red-500" /> State hooks:</span>
         <div className="flex gap-3">
           <span>comps: <strong className="text-foreground font-medium">{comparisons}</strong></span>
           <span>swaps: <strong className="text-rose-500 font-medium">{swaps}</strong></span>
@@ -472,7 +839,8 @@ export default function LandingPage3D() {
   // 3D Engine States
   const [showWireframe, setShowWireframe] = useState(true);
   const [speed, setSpeed] = useState(1.0);
-  const [colorTheme, setColorTheme] = useState<"amber" | "emerald" | "rose">("amber");
+  const [colorTheme, setColorTheme] = useState<"red" | "emerald" | "rose">("red");
+  const [bgEffect, setBgEffect] = useState<"network" | "helix" | "wave">("network");
   const [isCalibratorOpen, setIsCalibratorOpen] = useState(false);
 
   const scrollToSection = (id: string) => {
@@ -485,7 +853,7 @@ export default function LandingPage3D() {
   return (
     <div className="relative min-h-screen bg-background text-foreground overflow-y-auto overflow-x-hidden transition-colors duration-300 selection:bg-primary/20">
       {/* High tech grid background pattern */}
-      <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,rgba(230,126,0,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(230,126,0,0.05)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#2a1d12_1px,transparent_1px),linear-gradient(to_bottom,#2a1d12_1px,transparent_1px)] bg-[size:4.5rem_4.5rem] [mask-image:radial-gradient(ellipse_at_center,black_75%,transparent_100%)] opacity-70 dark:opacity-35 font-mono"></div>
+      <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,rgba(239,68,68,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(239,68,68,0.04)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#2a0c0e_1px,transparent_1px),linear-gradient(to_bottom,#2a0c0e_1px,transparent_1px)] bg-[size:4.5rem_4.5rem] [mask-image:radial-gradient(ellipse_at_center,black_75%,transparent_100%)] opacity-70 dark:opacity-35 font-mono"></div>
 
       {/* Radial glows */}
       <div className="absolute top-[10%] left-[-10%] w-[40rem] h-[40rem] rounded-full bg-primary/10 blur-[120px] pointer-events-none"></div>
@@ -514,7 +882,7 @@ export default function LandingPage3D() {
 
             {isLoggedIn ? (
               <Link to="/dashboard">
-                <Button className="bg-primary/10 dark:bg-[#18112c] hover:bg-primary/20 dark:hover:bg-[#20173a] text-primary dark:text-amber-200 border border-primary/30 shadow-sm font-semibold text-xs h-9 px-4 rounded-lg cursor-pointer">
+                <Button className="bg-primary/10 dark:bg-[#18112c] hover:bg-primary/20 dark:hover:bg-[#20173a] text-primary dark:text-red-200 border border-primary/30 shadow-sm font-semibold text-xs h-9 px-4 rounded-lg cursor-pointer">
                   Workspace Console &rarr;
                 </Button>
               </Link>
@@ -550,7 +918,7 @@ export default function LandingPage3D() {
             >
               <Canvas camera={{ position: [0, 0, 5.8], fov: 48 }} gl={{ antialias: true, powerPreference: "high-performance" }}>
                 <Suspense fallback={null}>
-                  <Scene isDark={isDark} speed={speed} colorTheme={colorTheme} showWireframe={showWireframe} />
+                  <Scene isDark={isDark} speed={speed} colorTheme={colorTheme} showWireframe={showWireframe} bgEffect={bgEffect} />
                 </Suspense>
               </Canvas>
             </WebGLErrorBoundary>
@@ -570,7 +938,7 @@ export default function LandingPage3D() {
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-foreground leading-[1.08] font-sans">
             Solve in sync.
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-amber-500 to-orange-500 dark:from-amber-400 dark:via-yellow-400 dark:to-orange-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-rose-500 to-red-500 dark:from-red-400 dark:via-rose-400 dark:to-red-500">
               Visualize algorithms.
             </span>
           </h1>
@@ -728,7 +1096,7 @@ export default function LandingPage3D() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="relative p-10 md:p-16 rounded-3xl bg-gradient-to-br from-amber-500/5 via-orange-500/5 to-transparent dark:from-amber-950/30 dark:to-orange-950/15 border border-border/40 dark:border-white/10 overflow-hidden shadow-sm dark:shadow-2xl flex flex-col items-center text-center gap-6"
+            className="relative p-10 md:p-16 rounded-3xl bg-gradient-to-br from-red-500/5 via-rose-500/5 to-transparent dark:from-red-950/30 dark:to-rose-950/15 border border-border/40 dark:border-white/10 overflow-hidden shadow-sm dark:shadow-2xl flex flex-col items-center text-center gap-6"
           >
             <div className="absolute -top-24 -left-24 w-64 h-64 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
             <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-rose-500/5 dark:bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -821,18 +1189,42 @@ export default function LandingPage3D() {
                 </div>
               </div>
 
+              {/* Controls: Background Geometry */}
+              <div className="flex flex-col gap-1.5 text-left">
+                <label className="text-[9px] uppercase font-semibold text-foreground tracking-wider">Background Geometry</label>
+                <div className="grid grid-cols-3 gap-1">
+                  {[
+                    { label: "Network", val: "network" },
+                    { label: "Helix", val: "helix" },
+                    { label: "Wave", val: "wave" }
+                  ].map((bg) => (
+                    <button
+                      key={bg.label}
+                      onClick={() => setBgEffect(bg.val as "network" | "helix" | "wave")}
+                      className={`py-1 rounded text-[9px] text-center font-mono cursor-pointer transition-all border ${
+                        bgEffect === bg.val
+                          ? "bg-primary border-primary text-white font-bold"
+                          : "bg-secondary border-border hover:bg-secondary/70 text-foreground"
+                      }`}
+                    >
+                      {bg.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Controls: Color Spectrum */}
               <div className="flex flex-col gap-1.5 text-left">
                 <label className="text-[9px] uppercase font-semibold text-foreground tracking-wider">Spectrum coordinates</label>
                 <div className="grid grid-cols-3 gap-1">
                   {[
-                    { label: "Gold", val: "amber" },
+                    { label: "Crimson", val: "red" },
                     { label: "Blue", val: "emerald" },
                     { label: "Rose", val: "rose" }
                   ].map((c) => (
                     <button
                       key={c.label}
-                      onClick={() => setColorTheme(c.val as "amber" | "emerald" | "rose")}
+                      onClick={() => setColorTheme(c.val as "red" | "emerald" | "rose")}
                       className={`py-1 rounded text-[9px] text-center font-mono cursor-pointer transition-all border ${
                         colorTheme === c.val
                           ? "bg-primary border-primary text-white font-bold"
@@ -878,6 +1270,10 @@ export default function LandingPage3D() {
                 <div className="flex justify-between">
                   <span>COLOR:</span>
                   <span className="text-foreground uppercase">{colorTheme}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>GEOM:</span>
+                  <span className="text-foreground uppercase">{bgEffect}</span>
                 </div>
               </div>
             </motion.div>

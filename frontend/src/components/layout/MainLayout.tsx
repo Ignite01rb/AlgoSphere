@@ -28,23 +28,32 @@ export const AlgoArenaLogo = ({ className = "w-6 h-6" }: { className?: string })
         <stop offset="1" stopColor="hsl(var(--primary) / 0.4)" />
       </linearGradient>
       <filter id="navLogoGlow" x="-20%" y="-20%" width="140%" height="140%">
-        <feGaussianBlur stdDeviation="1.5" result="blur" />
-        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        <feGaussianBlur stdDeviation="1.2" result="blur" />
+        <feComposite in="SourceGraphic" in2="blur" opacity="0.85" operator="over" />
       </filter>
     </defs>
-    <path d="M12 2 L21 7 L21 17 L12 22 L3 17 L3 7 Z" stroke="url(#navLogoGrad)" strokeWidth="1.2" strokeLinejoin="round" opacity="0.35" />
-    <path d="M12 3 L20 7.5 L20 16.5 L12 21 L4 16.5 L4 7.5 Z" stroke="url(#navLogoGrad)" strokeWidth="1" strokeLinejoin="round" strokeDasharray="2 2" opacity="0.2" />
-    <line x1="12" y1="6" x2="7" y2="11" stroke="url(#navLogoGrad)" strokeWidth="1" opacity="0.4" />
-    <line x1="12" y1="6" x2="17" y2="11" stroke="url(#navLogoGrad)" strokeWidth="1" opacity="0.4" />
-    <line x1="7" y1="11" x2="12" y2="16" stroke="url(#navLogoGrad)" strokeWidth="1" opacity="0.4" />
-    <line x1="17" y1="11" x2="12" y2="16" stroke="url(#navLogoGrad)" strokeWidth="1" opacity="0.4" />
-    <line x1="12" y1="6" x2="12" y2="16" stroke="url(#navLogoGrad)" strokeWidth="1.2" opacity="0.6" />
-    <path d="M12 6 L17 11 L12 16 L7 11 Z" stroke="url(#navLogoGrad)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <circle cx="12" cy="11" r="2.5" fill="url(#navLogoGrad)" filter="url(#navLogoGlow)" />
-    <circle cx="12" cy="6" r="1.2" fill="currentColor" className="text-foreground" />
-    <circle cx="17" cy="11" r="1.2" fill="currentColor" className="text-foreground" />
-    <circle cx="12" cy="16" r="1.2" fill="currentColor" className="text-foreground" />
-    <circle cx="7" cy="11" r="1.2" fill="currentColor" className="text-foreground" />
+    
+    {/* Triangular Team Network Graph (Crest) */}
+    <path d="M8 7 L12 4 L16 7 Z" stroke="url(#navLogoGrad)" strokeWidth="1.0" strokeLinejoin="round" opacity="0.4" />
+    <circle cx="12" cy="4" r="1.5" fill="url(#navLogoGrad)" filter="url(#navLogoGlow)" />
+    <circle cx="8" cy="7" r="1.5" fill="url(#navLogoGrad)" />
+    <circle cx="16" cy="7" r="1.5" fill="url(#navLogoGrad)" />
+    
+    {/* Crossed Swords (Clashing slashes) */}
+    <line x1="8.5" y1="15.5" x2="15.5" y2="8.5" stroke="url(#navLogoGrad)" strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="8" y1="14.5" x2="9.5" y2="16" stroke="url(#navLogoGrad)" strokeWidth="1.2" />
+    
+    <line x1="15.5" y1="15.5" x2="8.5" y2="8.5" stroke="url(#navLogoGrad)" strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="16" y1="14.5" x2="14.5" y2="16" stroke="url(#navLogoGrad)" strokeWidth="1.2" />
+
+    {/* Interlocking Code Brackets (Shield sides) */}
+    <path d="M7.2 8 C6.2 8, 5.5 8.8, 5.5 9.8 L5.5 11.2 C5.5 11.8, 4.8 12.1, 4.3 12.5 C4.8 12.9, 5.5 13.2, 5.5 13.8 L5.5 15.2 C5.5 16.2, 6.2 17, 7.2 17" stroke="url(#navLogoGrad)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
+    <path d="M16.8 8 C17.8 8, 18.5 8.8, 18.5 9.8 L18.5 11.2 C18.5 11.8, 19.2 12.1, 19.7 12.5 C19.2 12.9, 18.5 13.2, 18.5 13.8 L18.5 15.2 C18.5 16.2, 17.8 17, 16.8 17" stroke="url(#navLogoGrad)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
+    
+    {/* Bottom Code Lines / Battle Ground */}
+    <line x1="10" y1="19" x2="14" y2="19" stroke="url(#navLogoGrad)" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
+    <line x1="9" y1="21" x2="15" y2="21" stroke="url(#navLogoGrad)" strokeWidth="1.2" strokeLinecap="round" opacity="0.75" />
+    <line x1="11" y1="23" x2="13" y2="23" stroke="url(#navLogoGrad)" strokeWidth="1.2" strokeLinecap="round" opacity="0.4" />
   </svg>
 );
 
@@ -231,8 +240,8 @@ export const MainLayout = () => {
                 onClick={() => navigate(item.path)}
                 className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-all ${
                   isActive
-                    ? "bg-primary/10 text-primary border-l-2 border-primary shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
+                    ? "bg-primary/5 text-primary font-bold"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
                 } cursor-pointer`}
               >
                 <item.icon className={`w-4 h-4 ${isActive ? "text-primary" : "text-muted-foreground/80"}`} />
@@ -298,14 +307,14 @@ export const MainLayout = () => {
                     }}
                     className={`relative flex items-center justify-between p-2 rounded-lg border transition-all cursor-pointer ${
                       isActive 
-                        ? "bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-primary/25 shadow-sm"
-                        : "border-transparent hover:bg-secondary/30 hover:border-border/20"
+                        ? "bg-primary/5 border-primary/15"
+                        : "border-transparent hover:bg-secondary/20"
                     }`}
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5">
                         {isActive && <span className="w-1 h-1 rounded-full bg-primary flex-shrink-0" />}
-                        <span className={`text-xs font-bold truncate ${isActive ? "text-primary" : "text-foreground"}`}>
+                        <span className={`text-xs font-semibold truncate ${isActive ? "text-primary" : "text-foreground/90"}`}>
                           {group.name}
                         </span>
                       </div>
@@ -347,7 +356,7 @@ export const MainLayout = () => {
             className="w-full h-9 justify-start px-2 gap-2.5 hover:text-destructive hover:bg-destructive/10 text-muted-foreground cursor-pointer rounded-lg border border-transparent hover:border-destructive/10"
             onClick={() => {
               logout();
-              navigate("/auth");
+              navigate("/");
             }}
           >
             <LogOut className="w-4 h-4" />
@@ -406,7 +415,7 @@ export const MainLayout = () => {
                 className="h-9 w-9 p-0 hover:text-destructive hover:bg-destructive/10 text-muted-foreground cursor-pointer"
                 onClick={() => {
                   logout();
-                  navigate("/auth");
+                  navigate("/");
                 }}
               >
                 <LogOut className="w-4 h-4" />

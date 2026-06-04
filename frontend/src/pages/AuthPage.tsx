@@ -10,6 +10,8 @@ import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { getAuthErrorContent } from "@/lib/auth-errors";
 import type { GlobalStatsResponse } from "@/lib/types";
+import { useTheme } from "@/hooks/use-theme";
+import { LoadingScreen } from "@/components/LoadingScreen";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
 const GOOGLE_OAUTH_STATE_STORAGE_KEY = "algosphere-google-oauth-state";
@@ -65,36 +67,59 @@ const GoogleIcon = () => (
   </svg>
 );
 
-export const AlgoArenaLogo = ({ className = "w-6 h-6" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="authLogoGrad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-        <stop stopColor="hsl(var(--primary))" />
-        <stop offset="0.5" stopColor="hsl(var(--primary) / 0.85)" />
-        <stop offset="1" stopColor="hsl(var(--primary) / 0.4)" />
-      </linearGradient>
-      <filter id="authLogoGlow" x="-20%" y="-20%" width="140%" height="140%">
-        <feGaussianBlur stdDeviation="1.5" result="blur" />
-        <feComposite in="SourceGraphic" in2="blur" operator="over" />
-      </filter>
-    </defs>
-    <path d="M12 2 L21 7 L21 17 L12 22 L3 17 L3 7 Z" stroke="url(#authLogoGrad)" strokeWidth="1.2" strokeLinejoin="round" opacity="0.35" />
-    <path d="M12 3 L20 7.5 L20 16.5 L12 21 L4 16.5 L4 7.5 Z" stroke="url(#authLogoGrad)" strokeWidth="1" strokeLinejoin="round" strokeDasharray="2 2" opacity="0.2" />
-    <line x1="12" y1="6" x2="7" y2="11" stroke="url(#authLogoGrad)" strokeWidth="1" opacity="0.4" />
-    <line x1="12" y1="6" x2="17" y2="11" stroke="url(#authLogoGrad)" strokeWidth="1" opacity="0.4" />
-    <line x1="7" y1="11" x2="12" y2="16" stroke="url(#authLogoGrad)" strokeWidth="1" opacity="0.4" />
-    <line x1="17" y1="11" x2="12" y2="16" stroke="url(#authLogoGrad)" strokeWidth="1" opacity="0.4" />
-    <line x1="12" y1="6" x2="12" y2="16" stroke="url(#authLogoGrad)" strokeWidth="1.2" opacity="0.6" />
-    <path d="M12 6 L17 11 L12 16 L7 11 Z" stroke="url(#authLogoGrad)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <circle cx="12" cy="11" r="2.5" fill="url(#authLogoGrad)" filter="url(#authLogoGlow)" />
-    <circle cx="12" cy="6" r="1.2" fill="currentColor" className="text-foreground" />
-    <circle cx="17" cy="11" r="1.2" fill="currentColor" className="text-foreground" />
-    <circle cx="12" cy="16" r="1.2" fill="currentColor" className="text-foreground" />
-    <circle cx="7" cy="11" r="1.2" fill="currentColor" className="text-foreground" />
-  </svg>
-);
+export const AlgoArenaLogo = ({ className = "w-6 h-6", variant = "dark" }: { className?: string; variant?: "light" | "dark" }) => {
+  const gradId = variant === "light" ? "authLogoGradLight" : "authLogoGradDark";
+  const glowId = variant === "light" ? "authLogoGlowLight" : "authLogoGlowDark";
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="authLogoGradDark" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+          <stop stopColor="hsl(var(--primary))" />
+          <stop offset="0.5" stopColor="hsl(var(--primary) / 0.85)" />
+          <stop offset="1" stopColor="hsl(var(--primary) / 0.4)" />
+        </linearGradient>
+        <linearGradient id="authLogoGradLight" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+          <stop stopColor="hsl(var(--primary))" />
+          <stop offset="0.5" stopColor="hsl(var(--primary) / 0.95)" />
+          <stop offset="1" stopColor="hsl(var(--primary) / 0.75)" />
+        </linearGradient>
+        <filter id="authLogoGlowDark" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1.5" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" opacity="0.85" operator="over" />
+        </filter>
+        <filter id="authLogoGlowLight" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1.0" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" opacity="0.65" operator="over" />
+        </filter>
+      </defs>
+      
+      {/* Triangular Team Network Graph (Crest) */}
+      <path d="M8 7 L12 4 L16 7 Z" stroke={`url(#${gradId})`} strokeWidth="1.0" strokeLinejoin="round" opacity="0.4" />
+      <circle cx="12" cy="4" r="1.5" fill={`url(#${gradId})`} filter={`url(#${glowId})`} />
+      <circle cx="8" cy="7" r="1.5" fill={`url(#${gradId})`} />
+      <circle cx="16" cy="7" r="1.5" fill={`url(#${gradId})`} />
+      
+      {/* Crossed Swords (Clashing slashes) */}
+      <line x1="8.5" y1="15.5" x2="15.5" y2="8.5" stroke={`url(#${gradId})`} strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="8" y1="14.5" x2="9.5" y2="16" stroke={`url(#${gradId})`} strokeWidth="1.2" />
+      
+      <line x1="15.5" y1="15.5" x2="8.5" y2="8.5" stroke={`url(#${gradId})`} strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="16" y1="14.5" x2="14.5" y2="16" stroke={`url(#${gradId})`} strokeWidth="1.2" />
+
+      {/* Interlocking Code Brackets (Shield sides) */}
+      <path d="M7.2 8 C6.2 8, 5.5 8.8, 5.5 9.8 L5.5 11.2 C5.5 11.8, 4.8 12.1, 4.3 12.5 C4.8 12.9, 5.5 13.2, 5.5 13.8 L5.5 15.2 C5.5 16.2, 6.2 17, 7.2 17" stroke={`url(#${gradId})`} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
+      <path d="M16.8 8 C17.8 8, 18.5 8.8, 18.5 9.8 L18.5 11.2 C18.5 11.8, 19.2 12.1, 19.7 12.5 C19.2 12.9, 18.5 13.2, 18.5 13.8 L18.5 15.2 C18.5 16.2, 17.8 17, 16.8 17" stroke={`url(#${gradId})`} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
+      
+      {/* Bottom Code Lines / Battle Ground */}
+      <line x1="10" y1="19" x2="14" y2="19" stroke={`url(#${gradId})`} strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
+      <line x1="9" y1="21" x2="15" y2="21" stroke={`url(#${gradId})`} strokeWidth="1.2" strokeLinecap="round" opacity="0.75" />
+      <line x1="11" y1="23" x2="13" y2="23" stroke={`url(#${gradId})`} strokeWidth="1.2" strokeLinecap="round" opacity="0.4" />
+    </svg>
+  );
+};
 
 const AuthPage = () => {
+  const { isDark } = useTheme();
   const [isLogin, setIsLogin] = useState(true);
   const [identifier, setIdentifier] = useState("");
   const [email, setEmail] = useState("");
@@ -104,6 +129,7 @@ const AuthPage = () => {
   const [favoriteTopic, setFavoriteTopic] = useState("");
   const [favoritePlatform, setFavoritePlatform] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
   const [stats, setStats] = useState<GlobalStatsResponse | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
@@ -137,12 +163,8 @@ const AuthPage = () => {
     }, 300);
   }, []);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Code2 className="w-8 h-8 text-primary animate-spin" />
-      </div>
-    );
+  if (isLoading || isRedirecting) {
+    return <LoadingScreen message="Loading Sandbox..." />;
   }
 
   if (isAuthenticated) {
@@ -165,6 +187,10 @@ const AuthPage = () => {
             favoritePlatform: favoritePlatform || undefined,
           });
 
+      // Trigger redirect loading sequence
+      setIsRedirecting(true);
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+
       setSession(response.accessToken, response.user);
       toast.success(isLogin ? "Welcome back!" : "Account created");
       navigate("/dashboard");
@@ -173,18 +199,29 @@ const AuthPage = () => {
       toast.error(content.title, content.description ? { description: content.description } : undefined);
     } finally {
       setIsSubmitting(false);
+      setIsRedirecting(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-background flex select-none overflow-hidden">
       {/* Left side panel: Squad CP Pitch (Animated and Decorated) */}
-      <div className="hidden lg:flex lg:w-1/2 bg-[radial-gradient(circle_at_top_left,rgba(217,119,6,0.12),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(15,23,42,0.98),#030712)] relative before:absolute before:inset-0 before:bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] before:bg-[size:40px_40px] before:pointer-events-none p-12 flex-col justify-between overflow-hidden border-r border-border/10">
+      <div className={`hidden lg:flex lg:w-1/2 relative p-12 flex-col justify-between overflow-hidden border-r transition-all duration-300 ${
+        isDark 
+          ? "bg-[radial-gradient(circle_at_top_left,rgba(239,68,68,0.06),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(248,250,252,0.98),#f1f5f9)] border-slate-200/60 before:bg-[linear-gradient(rgba(15,23,42,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.015)_1px,transparent_1px)]" 
+          : "bg-[radial-gradient(circle_at_top_left,rgba(239,68,68,0.1),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(15,23,42,0.98),#030712)] border-border/10 before:bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)]"
+      } before:absolute before:inset-0 before:bg-[size:40px_40px] before:pointer-events-none`}>
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-lg shadow-black/30 hover:scale-105 transition-all">
-            <AlgoArenaLogo className="w-5.5 h-5.5" />
+          <div className={`w-9 h-9 rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-105 ${
+            isDark 
+              ? "bg-slate-900/5 border border-slate-900/10 shadow-slate-900/5" 
+              : "bg-white/5 border border-white/10 shadow-black/30"
+          }`}>
+            <AlgoArenaLogo className="w-5.5 h-5.5" variant={isDark ? "light" : "dark"} />
           </div>
-          <span className="text-lg font-bold tracking-[0.15em] uppercase font-mono text-white">AlgoArena</span>
+          <span className={`text-lg font-bold tracking-[0.15em] uppercase font-mono transition-colors ${
+            isDark ? "text-slate-900" : "text-white"
+          }`}>AlgoArena</span>
         </div>
         
         <div className="text-left space-y-6">
@@ -192,11 +229,13 @@ const AuthPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.2, 0, 0, 1] }}
-            className="text-5xl font-extrabold tracking-tight text-white leading-tight font-sans"
+            className={`text-5xl font-extrabold tracking-tight leading-tight font-sans transition-colors ${
+              isDark ? "text-slate-900" : "text-white"
+            }`}
           >
             The shared ledger of your
             <br />
-            <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-red-500 via-rose-500 to-red-600 bg-clip-text text-transparent">
               squad&apos;s coding grind.
             </span>
           </motion.h1>
@@ -204,7 +243,9 @@ const AuthPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1, ease: [0.2, 0, 0, 1] }}
-            className="text-base text-slate-400 max-w-md leading-relaxed"
+            className={`text-base max-w-md leading-relaxed transition-colors ${
+              isDark ? "text-slate-600" : "text-slate-400"
+            }`}
           >
             Share problem links from any platform. Track what your squad is solving.
             Analyze difficulty mix, platform loyalty, and practice velocity in one place.
@@ -219,10 +260,18 @@ const AuthPage = () => {
           ].map((stat) => (
             <div 
               key={stat.label}
-              className="group/stat bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.04] hover:border-primary/20 transition-all rounded-2xl p-4 min-w-[125px] text-left shadow-sm backdrop-blur-md"
+              className={`group/stat transition-all rounded-2xl p-4 min-w-[125px] text-left shadow-sm backdrop-blur-md border ${
+                isDark 
+                  ? "bg-slate-900/[0.015] border-slate-900/[0.04] hover:bg-slate-900/[0.03] hover:border-primary/20" 
+                  : "bg-white/[0.02] border-white/[0.04] hover:bg-white/[0.04] hover:border-primary/20"
+              }`}
             >
-              <span className="text-2xl font-mono tabular-nums font-extrabold text-white group-hover/stat:text-primary transition-colors">{stat.value}</span>
-              <span className="block text-xs text-slate-400 mt-1">{stat.label}</span>
+              <span className={`text-2xl font-mono tabular-nums font-extrabold transition-colors group-hover/stat:text-primary ${
+                isDark ? "text-slate-900" : "text-white"
+              }`}>{stat.value}</span>
+              <span className={`block text-xs mt-1 transition-colors ${
+                isDark ? "text-slate-600" : "text-slate-400"
+              }`}>{stat.label}</span>
             </div>
           ))}
         </div>
@@ -245,7 +294,7 @@ const AuthPage = () => {
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
           
           <div className="flex items-center gap-3 mb-8 lg:hidden">
-            <AlgoArenaLogo className="w-6.5 h-6.5" />
+            <AlgoArenaLogo className="w-6.5 h-6.5" variant={isDark ? "dark" : "light"} />
             <span className="text-sm font-bold tracking-[0.1em] uppercase font-mono text-foreground">AlgoArena</span>
           </div>
 

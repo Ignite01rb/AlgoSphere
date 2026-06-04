@@ -86,6 +86,8 @@ const Dashboard = () => {
   });
   const { activeGroup, setActiveGroup, setShowDiscover } = useAppContext();
   const [filterText, setFilterText] = useState("");
+  const [platformFilter, setPlatformFilter] = useState<string>("all");
+  const [difficultyFilter, setDifficultyFilter] = useState<string>("all");
   const [showFilter, setShowFilter] = useState(false);
   const [selectedProblem, setSelectedProblem] = useState<Problem | null>(null);
   
@@ -204,18 +206,31 @@ const Dashboard = () => {
   );
 
   const filteredProblems = useMemo(() => {
-    if (!filterText.trim()) return problems;
-    const lower = filterText.toLowerCase();
-    return problems.filter(
-      (problem) =>
-        problem.title.toLowerCase().includes(lower) ||
-        (problem.contest ?? "").toLowerCase().includes(lower) ||
-        problem.sharedBy.toLowerCase().includes(lower) ||
-        problem.difficulty.toLowerCase().includes(lower) ||
-        problem.platform.toLowerCase().includes(lower) ||
-        (problem.tags ?? "").toLowerCase().includes(lower)
-    );
-  }, [problems, filterText]);
+    let result = problems;
+    
+    if (platformFilter !== "all") {
+      result = result.filter((p) => p.platform.toLowerCase() === platformFilter.toLowerCase());
+    }
+    
+    if (difficultyFilter !== "all") {
+      result = result.filter((p) => p.difficulty.toLowerCase() === difficultyFilter.toLowerCase());
+    }
+
+    if (filterText.trim()) {
+      const lower = filterText.toLowerCase();
+      result = result.filter(
+        (problem) =>
+          problem.title.toLowerCase().includes(lower) ||
+          (problem.contest ?? "").toLowerCase().includes(lower) ||
+          problem.sharedBy.toLowerCase().includes(lower) ||
+          problem.difficulty.toLowerCase().includes(lower) ||
+          problem.platform.toLowerCase().includes(lower) ||
+          (problem.tags ?? "").toLowerCase().includes(lower)
+      );
+    }
+    
+    return result;
+  }, [problems, filterText, platformFilter, difficultyFilter]);
 
   useGroupNotifications(problems, activeGroupSummary?.name ?? null, activeGroup);
 
@@ -391,7 +406,7 @@ const Dashboard = () => {
 
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-sm shadow-amber-500/50" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary shadow-sm shadow-primary/50" />
                           <span className="text-[10px] text-muted-foreground uppercase font-mono tracking-wider font-semibold">Weekly</span>
                         </div>
                         <p className="text-3xl font-extrabold tracking-tight text-foreground font-mono mt-1 tabular-nums">
@@ -421,7 +436,7 @@ const Dashboard = () => {
                           <svg className="w-full h-full transform -rotate-90">
                             {/* Outer Ring */}
                             <circle cx="28" cy="28" r="22" stroke="hsl(var(--border) / 0.2)" strokeWidth="2.5" fill="none" />
-                            <circle cx="28" cy="28" r="22" stroke="hsl(37, 90%, 55%)" strokeWidth="2.5" fill="none" strokeDasharray={strokeOuter} strokeDashoffset={strokeOuter * (1 - 0.75)} strokeLinecap="round" />
+                            <circle cx="28" cy="28" r="22" stroke="hsl(var(--primary))" strokeWidth="2.5" fill="none" strokeDasharray={strokeOuter} strokeDashoffset={strokeOuter * (1 - 0.75)} strokeLinecap="round" />
                             
                             {/* Middle Ring */}
                             <circle cx="28" cy="28" r="16" stroke="hsl(var(--border) / 0.2)" strokeWidth="2.5" fill="none" />
@@ -461,8 +476,8 @@ const Dashboard = () => {
                           <AreaChart data={chartData?.weeklyActivity ?? []} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
                             <defs>
                               <linearGradient id="activityGrad" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="hsl(37, 90%, 55%)" stopOpacity={0.15} />
-                                <stop offset="95%" stopColor="hsl(37, 90%, 55%)" stopOpacity={0} />
+                                <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.15} />
+                                <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                               </linearGradient>
                             </defs>
                             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.15)" vertical={false} />
@@ -483,11 +498,11 @@ const Dashboard = () => {
                             <Area
                               type="monotone"
                               dataKey="problems"
-                              stroke="hsl(37, 90%, 55%)"
+                              stroke="hsl(var(--primary))"
                               strokeWidth={2.5}
                               fill="url(#activityGrad)"
-                              dot={{ stroke: "hsl(37, 90%, 55%)", strokeWidth: 1.5, r: 2.5, fill: "hsl(var(--background))" }}
-                              activeDot={{ stroke: "hsl(37, 90%, 55%)", strokeWidth: 1.5, r: 4.5, fill: "hsl(37, 90%, 55%)" }}
+                              dot={{ stroke: "hsl(var(--primary))", strokeWidth: 1.5, r: 2.5, fill: "hsl(var(--background))" }}
+                              activeDot={{ stroke: "hsl(var(--primary))", strokeWidth: 1.5, r: 4.5, fill: "hsl(var(--primary))" }}
                             />
                           </AreaChart>
                         </ResponsiveContainer>
@@ -508,7 +523,7 @@ const Dashboard = () => {
                               <div key={performer.username} className="flex items-center justify-between text-xs">
                                 <div className="flex items-center gap-3">
                                   <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
-                                    idx === 0 ? "bg-amber-500/20 text-amber-500" :
+                                    idx === 0 ? "bg-primary/20 text-primary" :
                                     idx === 1 ? "bg-slate-400/20 text-slate-400" :
                                     "bg-orange-500/20 text-orange-500"
                                   }`}>
@@ -663,6 +678,66 @@ const Dashboard = () => {
                           </motion.div>
                         )}
                       </AnimatePresence>
+
+                      {/* Filter Pills */}
+                      <div className="flex flex-col gap-2.5 px-1 py-1.5 border-b border-border/10 pb-3">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
+                          {/* Platform filters */}
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider font-semibold mr-0.5">Platform:</span>
+                            {[
+                              { label: "All", value: "all" },
+                              { label: "LeetCode", value: "leetcode" },
+                              { label: "Codeforces", value: "codeforces" },
+                              { label: "AtCoder", value: "atcoder" },
+                            ].map((p) => {
+                              const active = platformFilter === p.value;
+                              return (
+                                <button
+                                  key={p.value}
+                                  onClick={() => setPlatformFilter(p.value)}
+                                  className={`px-2.5 py-0.5 text-[10px] rounded-full border transition-all cursor-pointer font-medium select-none ${
+                                    active
+                                      ? "bg-primary/10 text-primary border-primary/30"
+                                      : "bg-secondary/40 hover:bg-secondary/70 text-muted-foreground border-transparent"
+                                  }`}
+                                >
+                                  {p.label}
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          {/* Divider for larger screens */}
+                          <div className="hidden sm:block h-3.5 w-px bg-border/20" />
+
+                          {/* Difficulty filters */}
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider font-semibold mr-0.5">Difficulty:</span>
+                            {[
+                              { label: "All", value: "all" },
+                              { label: "Easy", value: "easy" },
+                              { label: "Medium", value: "medium" },
+                              { label: "Hard", value: "hard" },
+                            ].map((d) => {
+                              const active = difficultyFilter === d.value;
+                              return (
+                                <button
+                                  key={d.value}
+                                  onClick={() => setDifficultyFilter(d.value)}
+                                  className={`px-2.5 py-0.5 text-[10px] rounded-full border transition-all cursor-pointer font-medium select-none ${
+                                    active
+                                      ? "bg-primary/10 text-primary border-primary/30"
+                                      : "bg-secondary/40 hover:bg-secondary/70 text-muted-foreground border-transparent"
+                                  }`}
+                                >
+                                  {d.label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
 
                       {filteredProblems.length === 0 ? (
                         <div className="p-12 rounded-2xl border border-dashed border-border/50 bg-secondary/15 flex flex-col items-center justify-center text-center gap-3.5">

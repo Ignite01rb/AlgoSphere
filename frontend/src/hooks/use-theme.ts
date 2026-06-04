@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 export const useTheme = () => {
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("algosphere-theme") === "dark";
+      return localStorage.getItem("algoarena-theme") === "dark";
     }
     return false;
   });
@@ -15,7 +15,7 @@ export const useTheme = () => {
     } else {
       root.classList.remove("dark");
     }
-    localStorage.setItem("algosphere-theme", isDark ? "dark" : "light");
+    localStorage.setItem("algoarena-theme", isDark ? "dark" : "light");
   }, [isDark]);
 
   const toggle = () => setIsDark((prev) => !prev);

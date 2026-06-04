@@ -15,7 +15,7 @@
     --popover: 40 20% 99%;
     --popover-foreground: 30 50% 4%;
 
-    --primary: 36 96% 48%;
+    --primary: 350 85% 55%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 40 10% 94%;
@@ -32,18 +32,18 @@
 
     --border: 40 10% 90%;
     --input: 40 10% 90%;
-    --ring: 36 96% 48%;
+    --ring: 350 85% 55%;
 
     --radius: 0.85rem;
 
     --sidebar-background: 40 15% 97%;
     --sidebar-foreground: 30 30% 30%;
-    --sidebar-primary: 36 96% 48%;
+    --sidebar-primary: 350 85% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 40 10% 93%;
     --sidebar-accent-foreground: 30 50% 10%;
     --sidebar-border: 40 10% 92%;
-    --sidebar-ring: 36 96% 48%;
+    --sidebar-ring: 350 85% 55%;
 
     /* Source brand colors */
     --spotify: 141 73% 42%;
@@ -52,8 +52,8 @@
 
     /* Shadows */
     --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-    --shadow-card: 0 0 0 1px rgba(0,0,0,0.03), 0 2px 5px rgba(217,119,6,0.03), 0 12px 24px -12px rgba(217,119,6,0.05);
-    --shadow-elevated: 0 0 0 1px rgba(0,0,0,0.03), 0 4px 10px rgba(217,119,6,0.04), 0 24px 48px -12px rgba(217,119,6,0.06);
+    --shadow-card: 0 0 0 1px rgba(0,0,0,0.03), 0 2px 5px rgba(239,68,68,0.03), 0 12px 24px -12px rgba(239,68,68,0.05);
+    --shadow-elevated: 0 0 0 1px rgba(0,0,0,0.03), 0 4px 10px rgba(239,68,68,0.04), 0 24px 48px -12px rgba(239,68,68,0.06);
   }
 
   .dark {
@@ -66,7 +66,7 @@
     --popover: 30 12% 8%;
     --popover-foreground: 35 20% 96%;
 
-    --primary: 37 90% 55%;
+    --primary: 355 85% 55%;
     --primary-foreground: 30 15% 4.5%;
 
     --secondary: 30 10% 11%;
@@ -83,16 +83,16 @@
 
     --border: 30 10% 13%;
     --input: 30 10% 13%;
-    --ring: 37 90% 55%;
+    --ring: 355 85% 55%;
 
     --sidebar-background: 30 12% 6%;
     --sidebar-foreground: 35 15% 85%;
-    --sidebar-primary: 37 90% 55%;
+    --sidebar-primary: 355 85% 55%;
     --sidebar-primary-foreground: 30 15% 4.5%;
     --sidebar-accent: 30 10% 10%;
     --sidebar-accent-foreground: 35 20% 92%;
     --sidebar-border: 30 10% 10%;
-    --sidebar-ring: 37 90% 55%;
+    --sidebar-ring: 355 85% 55%;
 
     --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
     --shadow-card: 0 0 0 1px rgba(255,255,255,0.02), 0 2px 4px rgba(0,0,0,0.4), 0 12px 24px -12px rgba(0,0,0,0.5);

@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Code2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { LoadingScreen } from "@/components/LoadingScreen";
 
 const GOOGLE_OAUTH_STATE_STORAGE_KEY = "algosphere-google-oauth-state";
 
@@ -50,11 +50,7 @@ const GoogleCallback = () => {
       });
   }, [searchParams, navigate, setSession]);
 
-  return (
-    <div className="min-h-screen bg-background flex items-center justify-center">
-      <Code2 className="w-8 h-8 text-primary animate-spin" />
-    </div>
-  );
+  return <LoadingScreen message="Authenticating with Google..." />;
 };
 
 export default GoogleCallback;
