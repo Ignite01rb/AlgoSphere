@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Filter, Code2, FlaskConical, Users2, Bell, Settings, ArrowRight, User, Edit3 } from "lucide-react";
+import { Filter, Code2, FlaskConical, Users2, Bell, Settings, ArrowRight, User } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -17,73 +17,10 @@ import { useAppContext } from "@/lib/app-context";
 import { formatRelativeTime } from "@/lib/format";
 import type { Problem } from "@/lib/types";
 import { useGroupNotifications } from "@/hooks/use-group-notifications";
-import { PlatformMark } from "@/components/icons/PlatformIcons";
 
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-
-const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { value: number | string }[] }) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-card/95 border border-border/50 backdrop-blur-md px-3.5 py-2 rounded-xl shadow-xl text-left">
-        <p className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground">Solved Count</p>
-        <p className="text-xs font-bold text-primary font-mono mt-0.5">
-          {payload[0].value} problems
-        </p>
-      </div>
-    );
-  }
-  return null;
-};
 
 const Dashboard = () => {
-  const { user, updateUser } = useAuth();
-  
-  const [showPlatformsModal, setShowPlatformsModal] = useState(false);
-  const [leetcodeHandle, setLeetcodeHandle] = useState("");
-  const [codeforcesHandle, setCodeforcesHandle] = useState("");
-  const [codechefHandle, setCodechefHandle] = useState("");
-  const [atcoderHandle, setAtcoderHandle] = useState("");
-
-  useEffect(() => {
-    if (user) {
-      setLeetcodeHandle(user.leetcodeHandle ?? "");
-      setCodeforcesHandle(user.codeforcesHandle ?? "");
-      setCodechefHandle(user.codechefHandle ?? "");
-      setAtcoderHandle(user.atcoderHandle ?? "");
-    }
-  }, [user]);
-
-  const updateHandlesMutation = useMutation({
-    mutationFn: () =>
-      api.updateProfile({
-        displayName: user?.displayName ?? "",
-        bio: user?.bio ?? "",
-        favoriteTopic: user?.favoriteTopic ?? null,
-        favoritePlatform: user?.favoritePlatform ?? null,
-        avatarUrl: user?.avatarUrl ?? null,
-        leetcodeHandle: leetcodeHandle || null,
-        codeforcesHandle: codeforcesHandle || null,
-        codechefHandle: codechefHandle || null,
-        atcoderHandle: atcoderHandle || null,
-      }),
-    onSuccess: (updatedUser) => {
-      toast.success("Platform handles updated successfully");
-      updateUser(updatedUser);
-      void queryClient.invalidateQueries({ queryKey: ["profile"] });
-      setShowPlatformsModal(false);
-    },
-    onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "Failed to update platform handles");
-    },
-  });
+  const { user } = useAuth();
   const { activeGroup, setActiveGroup, setShowDiscover } = useAppContext();
   const [filterText, setFilterText] = useState("");
   const [platformFilter, setPlatformFilter] = useState<string>("all");
@@ -246,25 +183,7 @@ const Dashboard = () => {
     (friend) => !groupMembersUsernames.includes(friend.username)
   );
 
-  // Compute platform solved counts
-  const platformStats = useMemo(() => {
-    const stats = {
-      LeetCode: 0,
-      Codeforces: 0,
-      CodeChef: 0,
-      AtCoder: 0,
-    };
-    if (chartData?.platformLoyalty) {
-      chartData.platformLoyalty.forEach((entry) => {
-        const name = entry.name.toLowerCase();
-        if (name.includes("leetcode")) stats.LeetCode = entry.problems;
-        else if (name.includes("codeforces")) stats.Codeforces = entry.problems;
-        else if (name.includes("codechef")) stats.CodeChef = entry.problems;
-        else if (name.includes("atcoder")) stats.AtCoder = entry.problems;
-      });
-    }
-    return stats;
-  }, [chartData]);
+
 
   // Leaderboard / Performers list logic (sort members by problems solved in current feed)
   const performers = useMemo(() => {
@@ -376,47 +295,89 @@ const Dashboard = () => {
               {activeTab === "overview" ? (
                 /* Premium Dashboard Hub Overview */
                 <div className="space-y-8 text-left">
-                  {/* Top Row: Metrics Columns & Progress Banner Card */}
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-                    {/* Left side: Metrics row (Unboxed & Cleaned to match mockup) */}
-                    <div className="lg:col-span-7 flex items-center gap-10 py-2">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-teal-500 shadow-sm shadow-teal-500/50" />
-                          <span className="text-[10px] text-muted-foreground uppercase font-mono tracking-wider font-semibold">Shared</span>
+                  {/* Top Dashboard Row: Stacked Metrics & Top Performers (Left) side-by-side with Boost Your Grind (Right) */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                    {/* Left side: Metrics row and Top Performers Card stacked */}
+                    <div className="lg:col-span-7 flex flex-col gap-6 justify-between">
+                      {/* Metrics row (Unboxed & Cleaned) */}
+                      <div className="flex items-center gap-10 py-2 text-left">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-teal-500 shadow-sm shadow-teal-500/50" />
+                            <span className="text-[10px] text-muted-foreground uppercase font-mono tracking-wider font-semibold">Shared</span>
+                          </div>
+                          <p className="text-3xl font-extrabold tracking-tight text-foreground font-mono mt-1 tabular-nums">
+                            {activeGroupSummary?.problemCount || 0}
+                          </p>
                         </div>
-                        <p className="text-3xl font-extrabold tracking-tight text-foreground font-mono mt-1 tabular-nums">
-                          {activeGroupSummary?.problemCount || 0}
-                        </p>
+
+                        <div className="h-8 w-px bg-border/30" />
+
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-red-500 shadow-sm shadow-red-500/50" />
+                            <span className="text-[10px] text-muted-foreground uppercase font-mono tracking-wider font-semibold">Members</span>
+                          </div>
+                          <p className="text-3xl font-extrabold tracking-tight text-foreground font-mono mt-1 tabular-nums">
+                            {activeGroupSummary?.memberCount || 0}
+                          </p>
+                        </div>
+
+                        <div className="h-8 w-px bg-border/30" />
+
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary shadow-sm shadow-primary/50" />
+                            <span className="text-[10px] text-muted-foreground uppercase font-mono tracking-wider font-semibold">Weekly</span>
+                          </div>
+                          <p className="text-3xl font-extrabold tracking-tight text-foreground font-mono mt-1 tabular-nums">
+                            {weeklyTotal}
+                          </p>
+                        </div>
                       </div>
 
-                      <div className="h-8 w-px bg-border/30" />
-
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-red-500 shadow-sm shadow-red-500/50" />
-                          <span className="text-[10px] text-muted-foreground uppercase font-mono tracking-wider font-semibold">Members</span>
+                      {/* Top Performers Leaderboard Card */}
+                      <div className="p-6 rounded-2xl bg-card/15 dark:bg-zinc-950/20 border border-border/20 shadow-sm flex flex-col justify-between flex-grow text-left">
+                        <div className="space-y-4 w-full">
+                          <h3 className="text-base font-bold text-foreground font-sans">Top Performers</h3>
+                          <div className="space-y-3.5 mt-2">
+                            {performers.length === 0 ? (
+                              <div className="text-center text-[10px] text-muted-foreground py-12 font-mono">
+                                No solve records in feed.
+                              </div>
+                            ) : (
+                              performers.map((performer, idx) => (
+                                <div key={performer.username} className="flex items-center justify-between text-xs">
+                                  <div className="flex items-center gap-3">
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
+                                      idx === 0 ? "bg-primary/20 text-primary" :
+                                      idx === 1 ? "bg-slate-400/20 text-slate-400" :
+                                      "bg-orange-500/20 text-orange-500"
+                                    }`}>
+                                      {performer.username.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div>
+                                      <span className="font-bold text-foreground block">@{performer.username}</span>
+                                      <span className="text-[9px] text-muted-foreground block mt-0.5">{performer.solveCount} solved</span>
+                                    </div>
+                                  </div>
+                                  <span className="font-mono font-bold text-foreground">{performer.percentage}%</span>
+                                </div>
+                              ))
+                            )}
+                          </div>
                         </div>
-                        <p className="text-3xl font-extrabold tracking-tight text-foreground font-mono mt-1 tabular-nums">
-                          {activeGroupSummary?.memberCount || 0}
-                        </p>
-                      </div>
-
-                      <div className="h-8 w-px bg-border/30" />
-
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-primary shadow-sm shadow-primary/50" />
-                          <span className="text-[10px] text-muted-foreground uppercase font-mono tracking-wider font-semibold">Weekly</span>
-                        </div>
-                        <p className="text-3xl font-extrabold tracking-tight text-foreground font-mono mt-1 tabular-nums">
-                          {weeklyTotal}
-                        </p>
+                        <button 
+                          onClick={() => setActiveTab("members")}
+                          className="text-[10px] font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-widest text-left mt-4 inline-flex items-center gap-1 cursor-pointer"
+                        >
+                          View Roster <ArrowRight className="w-3 h-3" />
+                        </button>
                       </div>
                     </div>
 
-                    {/* Right side: Boost Your Grind banner card (Higher Transparency, Glassmorphic) */}
-                    <div className="lg:col-span-5 bg-card/25 border border-border/20 backdrop-blur-md rounded-2xl p-5 flex items-center justify-between shadow-sm">
+                    {/* Right side: Boost Your Grind banner card (Matching Glass Style, flex layout) */}
+                    <div className="lg:col-span-5 bg-card/15 dark:bg-zinc-950/20 border border-border/20 backdrop-blur-md rounded-2xl p-6 flex flex-col justify-between shadow-sm text-left">
                       <div className="flex items-center gap-3">
                         <div className="relative w-10 h-10 rounded-full overflow-hidden border border-primary/20 bg-secondary/50 flex items-center justify-center">
                           {user?.avatarUrl ? (
@@ -431,7 +392,7 @@ const Dashboard = () => {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center justify-between mt-8">
                         <div className="relative w-14 h-14 flex items-center justify-center">
                           <svg className="w-full h-full transform -rotate-90">
                             {/* Outer Ring */}
@@ -455,178 +416,6 @@ const Dashboard = () => {
                           GO
                         </button>
                       </div>
-                    </div>
-                  </div>
-
-                  {/* Middle Row: Activity Spline Chart & Top Performers Leaderboard (Clean Glass Cards) */}
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-                    {/* Left: Activity Spline Card */}
-                    <div className="lg:col-span-8 p-6 rounded-2xl bg-card/15 dark:bg-zinc-950/20 border border-border/20 shadow-sm flex flex-col gap-4">
-                      <div className="flex justify-between items-baseline">
-                        <div>
-                          <h3 className="text-base font-bold text-foreground font-sans">Activity</h3>
-                          <p className="text-[10px] text-muted-foreground/60 mt-0.5">Data updates automatically</p>
-                        </div>
-                        <div className="text-[9px] font-mono text-muted-foreground border border-border/20 px-2 py-0.5 rounded-md bg-secondary/15">
-                          01-07 Days
-                        </div>
-                      </div>
-                      <div className="w-full h-56">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <AreaChart data={chartData?.weeklyActivity ?? []} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                            <defs>
-                              <linearGradient id="activityGrad" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.15} />
-                                <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                              </linearGradient>
-                            </defs>
-                            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.15)" vertical={false} />
-                            <XAxis
-                              dataKey="day"
-                              tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }}
-                              axisLine={false}
-                              tickLine={false}
-                              dy={6}
-                            />
-                            <YAxis
-                              tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }}
-                              axisLine={false}
-                              tickLine={false}
-                              width={25}
-                            />
-                            <Tooltip content={<CustomTooltip />} />
-                            <Area
-                              type="monotone"
-                              dataKey="problems"
-                              stroke="hsl(var(--primary))"
-                              strokeWidth={2.5}
-                              fill="url(#activityGrad)"
-                              dot={{ stroke: "hsl(var(--primary))", strokeWidth: 1.5, r: 2.5, fill: "hsl(var(--background))" }}
-                              activeDot={{ stroke: "hsl(var(--primary))", strokeWidth: 1.5, r: 4.5, fill: "hsl(var(--primary))" }}
-                            />
-                          </AreaChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </div>
-
-                    {/* Right: Top Performers Leaderboard Card */}
-                    <div className="lg:col-span-4 p-6 rounded-2xl bg-card/15 dark:bg-zinc-950/20 border border-border/20 shadow-sm flex flex-col justify-between">
-                      <div className="space-y-4 w-full">
-                        <h3 className="text-base font-bold text-foreground font-sans">Top Performers</h3>
-                        <div className="space-y-3.5 mt-2">
-                          {performers.length === 0 ? (
-                            <div className="text-center text-[10px] text-muted-foreground py-12 font-mono">
-                              No solve records in feed.
-                            </div>
-                          ) : (
-                            performers.map((performer, idx) => (
-                              <div key={performer.username} className="flex items-center justify-between text-xs">
-                                <div className="flex items-center gap-3">
-                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
-                                    idx === 0 ? "bg-primary/20 text-primary" :
-                                    idx === 1 ? "bg-slate-400/20 text-slate-400" :
-                                    "bg-orange-500/20 text-orange-500"
-                                  }`}>
-                                    {performer.username.charAt(0).toUpperCase()}
-                                  </div>
-                                  <div>
-                                    <span className="font-bold text-foreground block">@{performer.username}</span>
-                                    <span className="text-[9px] text-muted-foreground block mt-0.5">{performer.solveCount} solved</span>
-                                  </div>
-                                </div>
-                                <span className="font-mono font-bold text-foreground">{performer.percentage}%</span>
-                              </div>
-                            ))
-                          )}
-                        </div>
-                      </div>
-                      <button 
-                        onClick={() => setActiveTab("members")}
-                        className="text-[10px] font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-widest text-left mt-4 inline-flex items-center gap-1 cursor-pointer"
-                      >
-                        View Roster <ArrowRight className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Bottom Row: Coding Platforms Strip (Channels) - Highly Translucent */}
-                  <div className="p-6 rounded-2xl bg-secondary/10 border border-border/10 shadow-sm space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="text-left">
-                        <h3 className="text-sm font-bold text-foreground font-sans">Platforms</h3>
-                        <p className="text-[10px] text-muted-foreground/60 mt-0.5">Your platforms statistics for 1 week period</p>
-                      </div>
-                      <button
-                        onClick={() => setShowPlatformsModal(true)}
-                        className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/40 transition-all cursor-pointer"
-                        title="Configure platform handles/links"
-                      >
-                        <Edit3 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 pt-1">
-                      {[
-                        { name: "LeetCode", code: "leetcode", solve: platformStats.LeetCode, color: "bg-amber-500/10 text-amber-500", handle: user?.leetcodeHandle, link: user?.leetcodeHandle ? `https://leetcode.com/${user.leetcodeHandle}` : undefined },
-                        { name: "Codeforces", code: "codeforces", solve: platformStats.Codeforces, color: "bg-blue-500/10 text-blue-500", handle: user?.codeforcesHandle, link: user?.codeforcesHandle ? `https://codeforces.com/profile/${user.codeforcesHandle}` : undefined },
-                        { name: "CodeChef", code: "codechef", solve: platformStats.CodeChef, color: "bg-orange-500/10 text-orange-500", handle: user?.codechefHandle, link: user?.codechefHandle ? `https://www.codechef.com/users/${user.codechefHandle}` : undefined },
-                        { name: "AtCoder", code: "atcoder", solve: platformStats.AtCoder, color: "bg-gray-500/10 text-gray-500", handle: user?.atcoderHandle, link: user?.atcoderHandle ? `https://atcoder.jp/users/${user.atcoderHandle}` : undefined }
-                      ].map((plat) => {
-                        const cardContent = (
-                          <>
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${plat.color}`}>
-                              <PlatformMark source={plat.code} className="w-4.5 h-4.5" />
-                            </div>
-                            <div className="text-center">
-                              <span className="text-[10px] font-bold text-foreground block">{plat.name}</span>
-                              <span className="text-[9px] text-muted-foreground block mt-0.5 truncate max-w-[80px]">
-                                {plat.handle ? `@${plat.handle}` : `@${user?.username}`}
-                              </span>
-                            </div>
-                            <span className="text-xs font-mono font-bold text-foreground">
-                              +{plat.solve > 0 ? plat.solve : 2}%
-                            </span>
-                          </>
-                        );
-
-                        if (plat.link) {
-                          return (
-                            <a
-                              key={plat.name}
-                              href={plat.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="relative bg-card/30 border border-border/20 rounded-2xl p-4 flex flex-col items-center justify-between gap-3 group transition-all hover:bg-card/50 hover:border-primary/20 hover:scale-[1.02] shadow-sm cursor-pointer text-left"
-                            >
-                              {cardContent}
-                            </a>
-                          );
-                        }
-
-                        return (
-                          <div
-                            key={plat.name}
-                            onClick={() => setShowPlatformsModal(true)}
-                            className="relative bg-card/30 border border-border/20 rounded-2xl p-4 flex flex-col items-center justify-between gap-3 group transition-all hover:bg-card/50 hover:border-primary/20 hover:scale-[1.02] shadow-sm cursor-pointer"
-                            title="Click to add profile handle"
-                          >
-                            {cardContent}
-                          </div>
-                        );
-                      })}
-
-                      {/* Full Stats CTA Card */}
-                      <button 
-                        onClick={() => navigate(`/analytics?groupId=${activeGroup}`)}
-                        className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl p-4 flex flex-col items-center justify-between gap-3 shadow-md shadow-primary/10 transition-all hover:scale-[1.02] cursor-pointer"
-                      >
-                        <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-                          <ArrowRight className="w-4 h-4 text-white" />
-                        </div>
-                        <span className="text-[10px] font-bold tracking-wider uppercase text-white block">Full Stats</span>
-                        <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                          <ArrowRight className="w-3.5 h-3.5 text-white" />
-                        </div>
-                      </button>
                     </div>
                   </div>
 
@@ -905,96 +694,7 @@ const Dashboard = () => {
       <AnimatePresence>
         {selectedProblem && <ProblemDetailsModal problem={selectedProblem} onClose={() => setSelectedProblem(null)} />}
         
-        {showPlatformsModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowPlatformsModal(false)}
-              className="absolute inset-0 bg-background/80 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative w-full max-w-md bg-card border border-border rounded-2xl shadow-xl overflow-hidden p-6 text-left"
-            >
-              <h3 className="text-lg font-bold text-foreground font-sans">Configure Platform Links</h3>
-              <p className="text-xs text-muted-foreground mt-1 font-sans">
-                Enter your usernames for CP platforms to display them on the dashboard and enable quick profile link clicking.
-              </p>
 
-              <form
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  updateHandlesMutation.mutate();
-                }}
-                className="space-y-4 mt-6 font-sans"
-              >
-                <div className="space-y-1.5 text-left">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">LeetCode Username</label>
-                  <Input
-                    placeholder="LeetCode username"
-                    value={leetcodeHandle}
-                    onChange={(event) => setLeetcodeHandle(event.target.value)}
-                    className="bg-secondary/20 border-border/40 focus:border-primary"
-                  />
-                </div>
-
-                <div className="space-y-1.5 text-left">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Codeforces Username</label>
-                  <Input
-                    placeholder="Codeforces username"
-                    value={codeforcesHandle}
-                    onChange={(event) => setCodeforcesHandle(event.target.value)}
-                    className="bg-secondary/20 border-border/40 focus:border-primary"
-                  />
-                </div>
-
-                <div className="space-y-1.5 text-left">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">CodeChef Username</label>
-                  <Input
-                    placeholder="CodeChef username"
-                    value={codechefHandle}
-                    onChange={(event) => setCodechefHandle(event.target.value)}
-                    className="bg-secondary/20 border-border/40 focus:border-primary"
-                  />
-                </div>
-
-                <div className="space-y-1.5 text-left">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">AtCoder Username</label>
-                  <Input
-                    placeholder="AtCoder username"
-                    value={atcoderHandle}
-                    onChange={(event) => setAtcoderHandle(event.target.value)}
-                    className="bg-secondary/20 border-border/40 focus:border-primary"
-                  />
-                </div>
-
-                <div className="flex justify-end gap-3 pt-4">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowPlatformsModal(false)}
-                    className="rounded-lg h-9 px-4 cursor-pointer"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    size="sm"
-                    disabled={updateHandlesMutation.isPending}
-                    className="rounded-lg h-9 px-4 cursor-pointer"
-                  >
-                    {updateHandlesMutation.isPending ? "Saving..." : "Save Settings"}
-                  </Button>
-                </div>
-              </form>
-            </motion.div>
-          </div>
-        )}
       </AnimatePresence>
     </div>
   );
