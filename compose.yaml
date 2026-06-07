@@ -27,10 +27,13 @@ services:
       - app
     build:
       context: ./backend
+      args:
+        - DB_PROVIDER=mysql
     environment:
       ALGOSPHERE_ENVIRONMENT: production
       ALGOSPHERE_SECRET_KEY: ${ALGOSPHERE_SECRET_KEY:?set ALGOSPHERE_SECRET_KEY in your environment or .env file}
       ALGOSPHERE_DATABASE_URL: mysql://${MYSQL_USER:-algosphere}:${MYSQL_PASSWORD:?set MYSQL_PASSWORD in your environment or .env file}@mysql:3306/${MYSQL_DATABASE:-algosphere}?charset=utf8mb4&parseTime=true
+      DATABASE_URL: mysql://${MYSQL_USER:-algosphere}:${MYSQL_PASSWORD:?set MYSQL_PASSWORD in your environment or .env file}@mysql:3306/${MYSQL_DATABASE:-algosphere}?charset=utf8mb4&parseTime=true
       ALGOSPHERE_DATABASE_AUTO_MIGRATE: "false"
       ALGOSPHERE_CORS_ORIGINS: ${ALGOSPHERE_CORS_ORIGINS:?set ALGOSPHERE_CORS_ORIGINS in your environment or .env file}
       ALGOSPHERE_ALLOWED_HOSTS: ${ALGOSPHERE_ALLOWED_HOSTS:?set ALGOSPHERE_ALLOWED_HOSTS in your environment or .env file}
@@ -75,11 +78,14 @@ services:
       - app
     build:
       context: ./backend
-    command: ["/app/algosphere", "migrate", "up"]
+      args:
+        - DB_PROVIDER=mysql
+    command: ["npx", "prisma", "db", "push", "--skip-generate"]
     environment:
       ALGOSPHERE_ENVIRONMENT: production
       ALGOSPHERE_SECRET_KEY: ${ALGOSPHERE_SECRET_KEY:?set ALGOSPHERE_SECRET_KEY in your environment or .env file}
       ALGOSPHERE_DATABASE_URL: mysql://${MYSQL_USER:-algosphere}:${MYSQL_PASSWORD:?set MYSQL_PASSWORD in your environment or .env file}@mysql:3306/${MYSQL_DATABASE:-algosphere}?charset=utf8mb4&parseTime=true
+      DATABASE_URL: mysql://${MYSQL_USER:-algosphere}:${MYSQL_PASSWORD:?set MYSQL_PASSWORD in your environment or .env file}@mysql:3306/${MYSQL_DATABASE:-algosphere}?charset=utf8mb4&parseTime=true
       ALGOSPHERE_DATABASE_AUTO_MIGRATE: "false"
       ALGOSPHERE_DATABASE_SSL_CA_PATH: ${ALGOSPHERE_DATABASE_SSL_CA_PATH:-}
       ALGOSPHERE_DATABASE_SSL_VERIFY_CERT: ${ALGOSPHERE_DATABASE_SSL_VERIFY_CERT:-false}

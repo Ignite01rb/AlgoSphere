@@ -31,6 +31,11 @@ const QuickSortViz = lazy(() => import("./pages/visualize/QuickSort"));
 const QueueViz = lazy(() => import("./pages/visualize/QueueViz"));
 const DFSGridViz = lazy(() => import("./pages/visualize/DFSGrid"));
 const DijkstraViz = lazy(() => import("./pages/visualize/Dijkstra"));
+const AStarGridViz = lazy(() => import("./pages/visualize/AStarGrid"));
+const TrieViz = lazy(() => import("./pages/visualize/TrieViz"));
+const BSTViz = lazy(() => import("./pages/visualize/BSTViz"));
+const NQueensViz = lazy(() => import("./pages/visualize/NQueensViz"));
+const KruskalViz = lazy(() => import("./pages/visualize/KruskalViz"));
 const TestCaseGeneratorPage = lazy(() => import("./pages/TestCaseGeneratorPage"));
 const SystemDesignPage = lazy(() => import("./pages/SystemDesignPage"));
 const SystemDesignTopicPage = lazy(() => import("./pages/SystemDesignTopicPage"));
@@ -75,6 +80,11 @@ const App = () => (
                   <Route path="/visualize/queue" element={<QueueViz />} />
                   <Route path="/visualize/dfs-grid" element={<DFSGridViz />} />
                   <Route path="/visualize/dijkstra" element={<DijkstraViz />} />
+                  <Route path="/visualize/astar-grid" element={<AStarGridViz />} />
+                  <Route path="/visualize/trie" element={<TrieViz />} />
+                  <Route path="/visualize/bst" element={<BSTViz />} />
+                  <Route path="/visualize/n-queens" element={<NQueensViz />} />
+                  <Route path="/visualize/kruskal" element={<KruskalViz />} />
                   <Route path="/test-generator" element={<TestCaseGeneratorPage />} />
                   <Route path="/system-design" element={<SystemDesignPage />} />
                   <Route path="/system-design/:slug" element={<SystemDesignTopicPage />} />

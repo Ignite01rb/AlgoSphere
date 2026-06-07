@@ -18,6 +18,7 @@ bun.lock
 bun.lockb
 frontend/dist/
 frontend/dist-ssr/
+backend/dist/
 *.tsbuildinfo
 coverage/
 playwright-report/

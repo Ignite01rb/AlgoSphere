@@ -1,0 +1,166 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:../algosphere.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id               BigInt             @id @default(autoincrement())
+  email            String             @unique
+  username         String             @unique
+  displayName      String             @map("display_name")
+  bio              String             @default("")
+  favoriteTopic    String?            @map("favorite_topic")
+  favoritePlatform String?            @map("favorite_platform")
+  avatarUrl        String?            @map("avatar_url")
+  leetcodeHandle   String?            @map("leetcode_handle")
+  codeforcesHandle String?            @map("codeforces_handle")
+  codechefHandle   String?            @map("codechef_handle")
+  atcoderHandle    String?            @map("atcoder_handle")
+  passwordHash     String?            @map("password_hash")
+  googleId         String?            @unique @map("google_id")
+  authProvider     String             @default("local") @map("auth_provider")
+  createdAt        DateTime           @default(now()) @map("created_at")
+
+  ownedGroups      Group[]            @relation("GroupOwner")
+  memberships      GroupMembership[]
+  sharedProblems   ProblemShare[]
+  friendships      Friendship[]       @relation("UserFriendships")
+  friendOf         Friendship[]       @relation("FriendFriendships")
+  joinRequests     JoinRequest[]
+  challenges       Challenge[]
+  challengeParts   ChallengeParticipant[]
+
+  @@map("users")
+}
+
+model Friendship {
+  id        BigInt   @id @default(autoincrement())
+  userId    BigInt   @map("user_id")
+  friendId  BigInt   @map("friend_id")
+  status    String   @default("pending")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation("UserFriendships", fields: [userId], references: [id], onDelete: Cascade)
+  friend    User     @relation("FriendFriendships", fields: [friendId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, friendId], name: "uq_friendship_pair")
+  @@map("friendships")
+}
+
+model Group {
+  id          BigInt            @id @default(autoincrement())
+  name        String
+  ownerId     BigInt            @map("owner_id")
+  createdAt   DateTime          @default(now()) @map("created_at")
+
+  owner       User              @relation("GroupOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  memberships GroupMembership[]
+  problems    ProblemShare[]
+  joinRequests JoinRequest[]
+
+  @@map("groups")
+}
+
+model GroupMembership {
+  id        BigInt   @id @default(autoincrement())
+  groupId   BigInt   @map("group_id")
+  userId    BigInt   @map("user_id")
+  role      String   @default("member")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId], name: "uq_group_membership")
+  @@map("group_memberships")
+}
+
+model ProblemShare {
+  id                BigInt   @id @default(autoincrement())
+  groupId           BigInt   @map("group_id")
+  sharedById        BigInt   @map("shared_by_id")
+  platform          String
+  problemUrl        String   @map("problem_url")
+  platformProblemId String?  @map("platform_problem_id")
+  title             String
+  contest           String?
+  tags              String?
+  difficulty        String   @default("Unknown")
+  thumbnailUrl      String?  @map("thumbnail_url")
+  solvedByCount     Int?     @map("solved_by_count")
+  problemSignature  String   @map("problem_signature")
+  sharedAt          DateTime @default(now()) @map("shared_at")
+
+  group             Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  sharedBy          User     @relation(fields: [sharedById], references: [id], onDelete: Cascade)
+
+  @@map("problem_shares")
+}
+
+model JoinRequest {
+  id        BigInt   @id @default(autoincrement())
+  groupId   BigInt   @map("group_id")
+  userId    BigInt   @map("user_id")
+  status    String   @default("pending")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId], name: "uq_join_request")
+  @@map("join_requests")
+}
+
+model Challenge {
+  id          BigInt                 @id @default(autoincrement())
+  createdById BigInt                 @map("created_by_id")
+  title       String
+  platform    String                 @default("codeforces")
+  numProblems Int                    @default(3) @map("num_problems")
+  minRating   Int?                   @map("min_rating")
+  maxRating   Int?                   @map("max_rating")
+  tags        String?
+  status      String                 @default("pending")
+  createdAt   DateTime               @default(now()) @map("created_at")
+  startedAt   DateTime?              @map("started_at")
+
+  createdBy    User                   @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  participants ChallengeParticipant[]
+  problems     ChallengeProblem[]
+
+  @@map("challenges")
+}
+
+model ChallengeParticipant {
+  id          BigInt    @id @default(autoincrement())
+  challengeId BigInt    @map("challenge_id")
+  userId      BigInt    @map("user_id")
+  status      String    @default("invited")
+  joinedAt    DateTime? @map("joined_at")
+
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([challengeId, userId], name: "uq_challenge_participant")
+  @@map("challenge_participants")
+}
+
+model ChallengeProblem {
+  id           BigInt    @id @default(autoincrement())
+  challengeId  BigInt    @map("challenge_id")
+  problemUrl   String    @map("problem_url")
+  title        String
+  contestId    Int?      @map("contest_id")
+  problemIndex String?   @map("problem_index")
+  rating       Int?
+  tags         String?
+  orderIndex   Int       @default(0) @map("order_index")
+
+  challenge    Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@map("challenge_problems")
+}

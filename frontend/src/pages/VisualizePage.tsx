@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Search, GitCompare, Layers, Link2, GitBranch, Grid3X3, ArrowUpDown, Split, Zap, ListOrdered, Route, Waypoints } from "lucide-react";
+import { Search, GitCompare, Layers, Link2, GitBranch, Grid3X3, ArrowUpDown, Split, Zap, ListOrdered, Route, Waypoints, Crown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const algorithms = [
@@ -15,6 +15,11 @@ const algorithms = [
   { slug: "queue", title: "Queue", description: "First-in first-out data structure with enqueue, dequeue & peek.", icon: ListOrdered, color: "text-teal-500" },
   { slug: "dfs-grid", title: "DFS Pathfinder", description: "Explore a grid depth-first — compare with BFS to see the difference.", icon: Route, color: "text-violet-500" },
   { slug: "dijkstra", title: "Dijkstra's Algorithm", description: "Find shortest paths in a weighted graph from a source node.", icon: Waypoints, color: "text-sky-500" },
+  { slug: "astar-grid", title: "A* Pathfinder", description: "Find the shortest path on a grid using A* search with heuristics.", icon: Grid3X3, color: "text-amber-500" },
+  { slug: "trie", title: "Trie (Prefix Tree)", description: "Explore prefix trees with word insertion, search, and autocompletion.", icon: GitBranch, color: "text-rose-500" },
+  { slug: "bst", title: "Binary Search Tree", description: "Learn BST structures with interactive insertion, search, and deletion.", icon: GitBranch, color: "text-indigo-500" },
+  { slug: "n-queens", title: "N-Queens Puzzle", description: "Visualize the N-Queens backtracking chessboard solver step-by-step.", icon: Crown, color: "text-rose-500" },
+  { slug: "kruskal", title: "Kruskal's MST", description: "Find the Minimal Spanning Tree in a weighted graph using DSU.", icon: Waypoints, color: "text-emerald-500" },
 ];
 
 export default function VisualizePage() {
