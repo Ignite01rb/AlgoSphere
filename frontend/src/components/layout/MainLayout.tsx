@@ -19,7 +19,7 @@ import { useAuth } from "@/lib/auth";
 import type { Group } from "@/components/GroupCard";
 import { formatRelativeTime } from "@/lib/format";
 
-export const AlgoArenaLogo = ({ className = "w-6 h-6" }: { className?: string }) => (
+export const AlgoArenaLogo = ({ className = "w-6 h-6", color = "url(#navLogoGrad)" }: { className?: string; color?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="navLogoGrad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
@@ -34,26 +34,26 @@ export const AlgoArenaLogo = ({ className = "w-6 h-6" }: { className?: string })
     </defs>
     
     {/* Triangular Team Network Graph (Crest) */}
-    <path d="M8 7 L12 4 L16 7 Z" stroke="url(#navLogoGrad)" strokeWidth="1.0" strokeLinejoin="round" opacity="0.4" />
-    <circle cx="12" cy="4" r="1.5" fill="url(#navLogoGrad)" filter="url(#navLogoGlow)" />
-    <circle cx="8" cy="7" r="1.5" fill="url(#navLogoGrad)" />
-    <circle cx="16" cy="7" r="1.5" fill="url(#navLogoGrad)" />
+    <path d="M8 7 L12 4 L16 7 Z" stroke={color} strokeWidth="1.0" strokeLinejoin="round" opacity="0.4" />
+    <circle cx="12" cy="4" r="1.5" fill={color} filter={color.startsWith("url") ? "url(#navLogoGlow)" : undefined} />
+    <circle cx="8" cy="7" r="1.5" fill={color} />
+    <circle cx="16" cy="7" r="1.5" fill={color} />
     
     {/* Crossed Swords (Clashing slashes) */}
-    <line x1="8.5" y1="15.5" x2="15.5" y2="8.5" stroke="url(#navLogoGrad)" strokeWidth="1.5" strokeLinecap="round" />
-    <line x1="8" y1="14.5" x2="9.5" y2="16" stroke="url(#navLogoGrad)" strokeWidth="1.2" />
+    <line x1="8.5" y1="15.5" x2="15.5" y2="8.5" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="8" y1="14.5" x2="9.5" y2="16" stroke={color} strokeWidth="1.2" />
     
-    <line x1="15.5" y1="15.5" x2="8.5" y2="8.5" stroke="url(#navLogoGrad)" strokeWidth="1.5" strokeLinecap="round" />
-    <line x1="16" y1="14.5" x2="14.5" y2="16" stroke="url(#navLogoGrad)" strokeWidth="1.2" />
+    <line x1="15.5" y1="15.5" x2="8.5" y2="8.5" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="16" y1="14.5" x2="14.5" y2="16" stroke={color} strokeWidth="1.2" />
 
     {/* Interlocking Code Brackets (Shield sides) */}
-    <path d="M7.2 8 C6.2 8, 5.5 8.8, 5.5 9.8 L5.5 11.2 C5.5 11.8, 4.8 12.1, 4.3 12.5 C4.8 12.9, 5.5 13.2, 5.5 13.8 L5.5 15.2 C5.5 16.2, 6.2 17, 7.2 17" stroke="url(#navLogoGrad)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
-    <path d="M16.8 8 C17.8 8, 18.5 8.8, 18.5 9.8 L18.5 11.2 C18.5 11.8, 19.2 12.1, 19.7 12.5 C19.2 12.9, 18.5 13.2, 18.5 13.8 L18.5 15.2 C18.5 16.2, 17.8 17, 16.8 17" stroke="url(#navLogoGrad)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
+    <path d="M7.2 8 C6.2 8, 5.5 8.8, 5.5 9.8 L5.5 11.2 C5.5 11.8, 4.8 12.1, 4.3 12.5 C4.8 12.9, 5.5 13.2, 5.5 13.8 L5.5 15.2 C5.5 16.2, 6.2 17, 7.2 17" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
+    <path d="M16.8 8 C17.8 8, 18.5 8.8, 18.5 9.8 L18.5 11.2 C18.5 11.8, 19.2 12.1, 19.7 12.5 C19.2 12.9, 18.5 13.2, 18.5 13.8 L18.5 15.2 C18.5 16.2, 17.8 17, 16.8 17" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
     
     {/* Bottom Code Lines / Battle Ground */}
-    <line x1="10" y1="19" x2="14" y2="19" stroke="url(#navLogoGrad)" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
-    <line x1="9" y1="21" x2="15" y2="21" stroke="url(#navLogoGrad)" strokeWidth="1.2" strokeLinecap="round" opacity="0.75" />
-    <line x1="11" y1="23" x2="13" y2="23" stroke="url(#navLogoGrad)" strokeWidth="1.2" strokeLinecap="round" opacity="0.4" />
+    <line x1="10" y1="19" x2="14" y2="19" stroke={color} strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
+    <line x1="9" y1="21" x2="15" y2="21" stroke={color} strokeWidth="1.2" strokeLinecap="round" opacity="0.75" />
+    <line x1="11" y1="23" x2="13" y2="23" stroke={color} strokeWidth="1.2" strokeLinecap="round" opacity="0.4" />
   </svg>
 );
 
@@ -69,7 +69,7 @@ export const MainLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
-  const { activeGroup, setActiveGroup, showCreateGroup, setShowCreateGroup, showDiscover, setShowDiscover } = useAppContext();
+  const { activeGroup, setActiveGroup, showCreateGroup, setShowCreateGroup, showDiscover, setShowDiscover, activeTab, setActiveTab } = useAppContext();
 
   const friendRequestsQuery = useQuery({
     queryKey: ["friendRequests"],
@@ -192,235 +192,208 @@ export const MainLayout = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex flex-row">
-      {/* Sleek left navigation drawer for Desktop viewports */}
-      <aside className="hidden md:flex flex-col w-64 border-r border-border/40 bg-sidebar/20 backdrop-blur-md h-screen sticky top-0 flex-shrink-0">
-        {/* Brand header */}
-        <div className="h-14 px-6 flex items-center gap-3 border-b border-border/40 cursor-pointer flex-shrink-0" onClick={() => navigate("/dashboard")}>
-          <AlgoArenaLogo className="w-6.5 h-6.5" />
-          <span className="text-sm font-bold tracking-[0.12em] uppercase font-mono text-foreground">
-            AlgoArena
-          </span>
+    <div className="min-h-screen bg-[#f8f7f4] dark:bg-[#121110] flex flex-row md:p-4 md:gap-4">
+      {/* Floating capsule left navigation sidebar for Desktop viewports */}
+      <aside className="hidden md:flex flex-col w-16 bg-white dark:bg-zinc-900 border border-border/80 dark:border-white/5 rounded-[24px] h-[calc(100vh-2rem)] sticky top-4 shadow-sm items-center py-6 gap-6 flex-shrink-0">
+        {/* Brand logo (Red Brackets capsule) */}
+        <div 
+          onClick={() => navigate("/dashboard")}
+          className="w-10 h-10 rounded-xl bg-red-500 hover:bg-red-600 flex items-center justify-center cursor-pointer shadow-sm shadow-red-500/25 transition-all hover:scale-105"
+          title="AlgoArena"
+        >
+          <AlgoArenaLogo className="w-6.5 h-6.5 text-white" color="white" />
         </div>
 
-        {/* Centered Profile Section (Mockup alignment) */}
-        <div className="py-6 flex flex-col items-center border-b border-border/30 bg-secondary/5">
-          <div className="relative group cursor-pointer" onClick={() => navigate("/profile")}>
-            {user?.avatarUrl ? (
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-primary/30 bg-secondary flex items-center justify-center shadow-md">
-                <img src={user.avatarUrl} alt={user.displayName} className="w-full h-full object-cover" />
-              </div>
-            ) : (
-              <div className="w-16 h-16 rounded-full border-2 border-primary/30 bg-secondary flex items-center justify-center shadow-md">
-                <UserCircle className="w-10 h-10 text-muted-foreground" />
-              </div>
-            )}
-            <span className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 bg-green-500 border-2 border-background rounded-full animate-pulse" />
-          </div>
-          <h2 className="text-xs font-bold text-foreground mt-3 font-sans truncate max-w-[180px] cursor-pointer hover:text-primary transition-colors" onClick={() => navigate("/profile")}>
-            {user?.displayName || "Grinder Pro"}
-          </h2>
-          <p className="text-[10px] text-muted-foreground font-mono mt-0.5">
-            @{user?.username || "squad"}
-          </p>
-        </div>
-
-        {/* Dynamic workspace pages */}
-        <div className="px-3 pt-4 space-y-1">
-          <span className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground/60 px-3.5 block mb-1">
-            Menu Navigation
-          </span>
+        {/* Dynamic menu page links */}
+        <div className="flex flex-col gap-3.5 flex-1 w-full items-center">
           {menuItems.map((item) => {
             const isActive = item.matchPath
               ? location.pathname.startsWith(item.matchPath)
               : location.pathname === item.path;
             return (
-              <button
-                key={item.label}
-                onClick={() => navigate(item.path)}
-                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-all ${
-                  isActive
-                    ? "bg-primary/5 text-primary font-bold"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
-                } cursor-pointer`}
-              >
-                <item.icon className={`w-4 h-4 ${isActive ? "text-primary" : "text-muted-foreground/80"}`} />
-                <span>{item.label}</span>
-              </button>
+              <Tooltip key={item.label}>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => navigate(item.path)}
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all cursor-pointer relative ${
+                      isActive
+                        ? "border-red-500 bg-red-50/50 dark:bg-red-950/20 text-[#d9383a]"
+                        : "border-border/60 dark:border-white/10 text-muted-foreground hover:text-foreground hover:bg-secondary/40"
+                    }`}
+                  >
+                    <item.icon className="w-4.5 h-4.5" />
+                    {isActive && (
+                      <span className="absolute w-1.5 h-1.5 bg-[#d9383a] rounded-full bottom-1" />
+                    )}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="right">{item.label}</TooltipContent>
+              </Tooltip>
             );
           })}
         </div>
 
-        {/* Dynamic squad selections selector */}
-        <div className="flex-1 overflow-y-auto px-3 mt-5 space-y-3.5 flex flex-col">
-          <div className="flex items-center justify-between border-t border-border/40 pt-4 px-1">
-            <span className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground/60 font-bold">
-              Your Squads ({filteredGroups.length})
-            </span>
-            <div className="flex gap-1.5">
+        {/* Bottom capsule actions (Theme, Logout, Avatar) */}
+        <div className="flex flex-col gap-3.5 items-center mt-auto pb-2">
+          {/* App Theme Toggle */}
+          <Tooltip>
+            <TooltipTrigger asChild>
               <button 
-                onClick={() => setShowCreateGroup(true)}
-                className="p-1 text-muted-foreground hover:text-primary hover:bg-secondary/50 rounded transition-all cursor-pointer"
-                title="Create Squad"
+                onClick={toggleTheme}
+                className="w-10 h-10 rounded-xl border border-border/60 dark:border-white/10 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/40 cursor-pointer transition-all"
               >
-                <Plus className="w-3.5 h-3.5" />
+                {isDark ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
               </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">App Theme</TooltipContent>
+          </Tooltip>
+
+          {/* Log out */}
+          <Tooltip>
+            <TooltipTrigger asChild>
               <button 
-                onClick={() => setShowDiscover(true)}
-                className="p-1 text-muted-foreground hover:text-primary hover:bg-secondary/50 rounded transition-all cursor-pointer relative"
-                title="Discover Squads"
-              >
-                <Compass className="w-3.5 h-3.5" />
-                {joinRequestsQuery.data && joinRequestsQuery.data.length > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
-                )}
-              </button>
-            </div>
-          </div>
-
-          <div className="relative px-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-            <Input
-              placeholder="Search squads..."
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              className="pl-8.5 h-8 text-[11px] border border-border/40 bg-secondary/30 focus-visible:ring-1 focus-visible:ring-primary/45 rounded-lg shadow-none"
-            />
-          </div>
-
-          <div className="space-y-1 overflow-y-auto max-h-[220px] scrollbar-thin flex-1 px-1">
-            {filteredGroups.length === 0 ? (
-              <div className="text-[10px] text-muted-foreground px-2 py-3 bg-secondary/20 rounded-lg text-center font-mono">
-                No squads loaded
-              </div>
-            ) : (
-              filteredGroups.map((group) => {
-                const isActive = activeGroup === group.id;
-                return (
-                  <div 
-                    key={group.id}
-                    onClick={() => {
-                      setActiveGroup(Number(group.id));
-                      if (location.pathname !== "/dashboard") {
-                        navigate("/dashboard");
-                      }
-                    }}
-                    className={`relative flex items-center justify-between p-2 rounded-lg border transition-all cursor-pointer ${
-                      isActive 
-                        ? "bg-primary/5 border-primary/15"
-                        : "border-transparent hover:bg-secondary/20"
-                    }`}
-                  >
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5">
-                        {isActive && <span className="w-1 h-1 rounded-full bg-primary flex-shrink-0" />}
-                        <span className={`text-xs font-semibold truncate ${isActive ? "text-primary" : "text-foreground/90"}`}>
-                          {group.name}
-                        </span>
-                      </div>
-                      <span className="text-[9px] text-muted-foreground block font-mono pl-2.5">
-                        {group.memberCount} members · {group.problemCount} shared
-                      </span>
-                    </div>
-                    
-                    {group.isOwner && (
-                      <button
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          setGroupToDelete(group);
-                        }}
-                        className="p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all flex-shrink-0 ml-1 cursor-pointer"
-                        title="Delete Squad"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-
-        {/* Bottom actions (no duplicate profile, matches mockup log-out/theme placement) */}
-        <div className="p-4 border-t border-border/40 mt-auto flex flex-col gap-2 bg-secondary/5">
-          <div className="flex items-center justify-between px-1">
-            <span className="text-[10px] font-medium text-muted-foreground">App Theme</span>
-            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 cursor-pointer text-muted-foreground hover:text-foreground" onClick={toggleTheme}>
-              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </Button>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full h-9 justify-start px-2 gap-2.5 hover:text-destructive hover:bg-destructive/10 text-muted-foreground cursor-pointer rounded-lg border border-transparent hover:border-destructive/10"
-            onClick={() => {
-              logout();
-              navigate("/");
-            }}
-          >
-            <LogOut className="w-4 h-4" />
-            <span className="text-xs font-semibold">Log out</span>
-          </Button>
-        </div>
-      </aside>
-
-      {/* Main dashboard content container */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-        {/* Context top-bar */}
-        <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/40 h-14 px-6 flex items-center justify-between flex-shrink-0">
-          <div className="flex items-center gap-2">
-            <h1 className="text-sm font-bold uppercase tracking-wider text-foreground font-mono flex items-center gap-1.5">
-              {currentTitle}
-              {location.pathname === "/dashboard" && activeGroupSummary && (
-                <>
-                  <span className="text-muted-foreground/40 font-sans">/</span>
-                  <span className="text-xs font-semibold text-primary font-sans lowercase">
-                    @{activeGroupSummary.name}
-                  </span>
-                </>
-              )}
-            </h1>
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            {/* Friends Manager Notification */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={`h-9 w-9 p-0 relative rounded-lg cursor-pointer ${friendsManagerTab ? "bg-accent text-accent-foreground" : ""}`}
-                  onClick={() => setFriendsManagerTab(pendingRequestCount > 0 ? "requests" : "friends")}
-                >
-                  <Users className="w-4.5 h-4.5" />
-                  {pendingRequestCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-primary-foreground">
-                      {pendingRequestCount}
-                    </span>
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Friends Console</TooltipContent>
-            </Tooltip>
-
-            {/* Mobile-only menu placeholders are handled below */}
-            <div className="md:hidden flex items-center gap-1">
-              <Button variant="ghost" size="sm" className="h-9 w-9 p-0 cursor-pointer" onClick={toggleTheme}>
-                {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-9 w-9 p-0 hover:text-destructive hover:bg-destructive/10 text-muted-foreground cursor-pointer"
                 onClick={() => {
                   logout();
                   navigate("/");
                 }}
+                className="w-10 h-10 rounded-xl border border-border/60 dark:border-white/10 flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 cursor-pointer transition-all"
               >
-                <LogOut className="w-4 h-4" />
-              </Button>
+                <LogOut className="w-4.5 h-4.5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Log out</TooltipContent>
+          </Tooltip>
+
+          <div className="h-px w-8 bg-border/40 my-1" />
+
+          {/* User Profile Avatar */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div 
+                className="relative cursor-pointer hover:scale-105 transition-all"
+                onClick={() => navigate("/profile")}
+              >
+                {user?.avatarUrl ? (
+                  <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-red-500 bg-secondary flex items-center justify-center shadow-sm">
+                    <img src={user.avatarUrl} alt={user.displayName} className="w-full h-full object-cover" />
+                  </div>
+                ) : (
+                  <div className="w-10 h-10 rounded-full border-2 border-red-500 bg-red-500 flex items-center justify-center text-white font-bold text-xs">
+                    {(user?.displayName || user?.username || "BI").substring(0, 2).toUpperCase()}
+                  </div>
+                )}
+                <span className="absolute bottom-0.5 right-0.5 w-2.5 h-2.5 bg-green-500 border border-background rounded-full animate-pulse" />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <div className="text-left font-sans">
+                <p className="text-xs font-bold text-foreground">@{user?.username || "username"}</p>
+                <p className="text-[10px] text-muted-foreground">{user?.displayName}</p>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+      </aside>
+
+      {/* Main dashboard content container */}
+      <div className="flex-1 flex flex-col min-w-0 h-screen md:h-[calc(100vh-2rem)] md:gap-4 overflow-hidden">
+        {/* Context top-bar */}
+        <header className="sticky top-0 z-40 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border-b border-border/40 md:border md:border-border/80 dark:border-white/5 md:rounded-2xl h-14 px-6 flex items-center justify-between flex-shrink-0 md:shadow-sm">
+          {/* Left: WORKSPACE / @squad */}
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">WORKSPACE</span>
+            <span className="text-muted-foreground/30">/</span>
+            {activeGroupSummary ? (
+              <span className="text-xs font-semibold text-foreground lowercase bg-secondary/50 dark:bg-zinc-800 px-2 py-0.5 rounded-md border border-border/40 dark:border-white/5">
+                @{activeGroupSummary.name}
+              </span>
+            ) : (
+              <span className="text-xs font-semibold text-muted-foreground lowercase">
+                @no-squad
+              </span>
+            )}
+          </div>
+
+          {/* Center: Tabs switcher (Dashboard Hub / Squad Roster) */}
+          {location.pathname === "/dashboard" && activeGroupSummary ? (
+            <div className="flex items-center gap-2 select-none">
+              <button
+                onClick={() => setActiveTab("overview")}
+                className={`px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase transition-all rounded-lg cursor-pointer ${
+                  activeTab === "overview"
+                    ? "bg-red-50 dark:bg-red-950/20 text-[#d9383a] border border-[#d9383a]/30"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/40 border border-transparent"
+                }`}
+              >
+                Dashboard Hub
+              </button>
+              <button
+                onClick={() => setActiveTab("members")}
+                className={`px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase transition-all rounded-lg cursor-pointer ${
+                  activeTab === "members"
+                    ? "bg-red-50 dark:bg-red-950/20 text-[#d9383a] border border-[#d9383a]/30"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/40 border border-transparent"
+                }`}
+              >
+                Squad Roster
+              </button>
             </div>
+          ) : (
+            <div className="text-xs font-bold uppercase tracking-wider text-foreground font-mono">
+              {currentTitle}
+            </div>
+          )}
+
+          {/* Right: Three square control buttons */}
+          <div className="flex items-center gap-2">
+            {/* Button 1: Discover Squads button */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setShowDiscover(true)}
+                  className="w-9 h-9 border border-border/80 dark:border-white/5 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/40 cursor-pointer transition-all relative"
+                >
+                  <Compass className="w-4 h-4" />
+                  {joinRequestsQuery.data && joinRequestsQuery.data.length > 0 && (
+                    <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
+                  )}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>Discover Squads</TooltipContent>
+            </Tooltip>
+
+            {/* Button 2: Friends Manager Console button */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setFriendsManagerTab(pendingRequestCount > 0 ? "requests" : "friends")}
+                  className={`w-9 h-9 border border-border/80 dark:border-white/5 rounded-xl flex items-center justify-center transition-all cursor-pointer relative ${
+                    friendsManagerTab ? "bg-secondary dark:bg-zinc-800 text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
+                  }`}
+                >
+                  <Users className="w-4.5 h-4.5" />
+                  {pendingRequestCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-primary-foreground">
+                      {pendingRequestCount}
+                    </span>
+                  )}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>Friends Console</TooltipContent>
+            </Tooltip>
+
+            {/* Button 3: Theme Toggle Button */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={toggleTheme}
+                  className="w-9 h-9 border border-border/80 dark:border-white/5 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/40 cursor-pointer transition-all"
+                >
+                  {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>Toggle Theme</TooltipContent>
+            </Tooltip>
           </div>
         </header>
 

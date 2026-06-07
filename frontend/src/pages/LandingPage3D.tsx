@@ -614,6 +614,72 @@ function Scene({ isDark, speed, colorTheme, showWireframe, bgEffect }: { isDark:
 }
 
 // Premium Bento Grid Widgets
+const FEED_EVENTS = [
+  { user: "sarah_dev", problem: "LCS DP", platform: "AtCoder", diff: "Medium" },
+  { user: "kyle99", problem: "LRU Cache", platform: "LeetCode", diff: "Hard" },
+  { user: "chao_wang", problem: "Dijkstra SP", platform: "Codeforces", diff: "Hard" },
+  { user: "lucia", problem: "Binary Search", platform: "LeetCode", diff: "Easy" },
+  { user: "nitin_s", problem: "Subtree Sum", platform: "Codeforces", diff: "Medium" },
+  { user: "elena", problem: "Edit Distance", platform: "LeetCode", diff: "Hard" },
+  { user: "zen_coder", problem: "QuickSort", platform: "AtCoder", diff: "Easy" },
+];
+
+interface BentoCardProps {
+  children: React.ReactNode;
+  className?: string;
+  whileHover?: any;
+  variants?: any;
+}
+
+export function BentoCard({ children, className, whileHover, variants }: BentoCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [coords, setCoords] = useState({ x: 0, y: 0 });
+  const [hovered, setHovered] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    setCoords({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+  };
+
+  return (
+    <motion.div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      variants={variants}
+      whileHover={whileHover}
+      transition={{ type: "spring", stiffness: 220, damping: 18 }}
+      className={`group relative rounded-2xl bg-card/45 dark:bg-card/25 border border-border/45 dark:border-white/5 p-6 overflow-hidden shadow-sm hover:shadow-md hover:border-primary/20 transform-style-3d min-h-[260px] cursor-pointer ${className || ""}`}
+      style={{
+        "--mouse-x": `${coords.x}px`,
+        "--mouse-y": `${coords.y}px`
+      } as any}
+    >
+      {/* Background Spotlight Glow */}
+      <div 
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+        style={{
+          background: `radial-gradient(350px circle at var(--mouse-x) var(--mouse-y), rgba(239, 68, 68, 0.07), transparent 75%)`
+        }}
+      />
+      {/* Border Spotlight Glow */}
+      <div 
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-2xl border border-red-500/20"
+        style={{
+          maskImage: `radial-gradient(130px circle at var(--mouse-x) var(--mouse-y), black, transparent)`,
+          WebkitMaskImage: `radial-gradient(130px circle at var(--mouse-x) var(--mouse-y), black, transparent)`
+        }}
+      />
+      {children}
+    </motion.div>
+  );
+}
+
 function SolverFeedWidget() {
   const [items, setItems] = useState([
     { id: 1, user: "alex", problem: "Two Sum", platform: "LeetCode", diff: "Easy", time: "Just now" },
@@ -624,45 +690,72 @@ function SolverFeedWidget() {
 
   useEffect(() => {
     const timer = setInterval(() => {
+      const randomEvent = FEED_EVENTS[Math.floor(Math.random() * FEED_EVENTS.length)];
       setItems((prev) => {
-        const next = [...prev];
-        const last = next.pop()!;
-        last.time = "Just now";
-        next.forEach((item) => {
-          if (item.time === "Just now") item.time = "1m ago";
-          else if (item.time.endsWith("m ago")) {
-            const min = parseInt(item.time) + 3;
-            item.time = `${min}m ago`;
+        const newItem = {
+          id: Date.now(),
+          user: randomEvent.user,
+          problem: randomEvent.problem,
+          platform: randomEvent.platform,
+          diff: randomEvent.diff,
+          time: "Just now"
+        };
+        const updatedPrev = prev.map(item => {
+          if (item.time === "Just now") return { ...item, time: "1m ago" };
+          if (item.time.endsWith("m ago")) {
+            const min = parseInt(item.time) + Math.floor(Math.random() * 3) + 1;
+            return { ...item, time: `${min}m ago` };
           }
+          return item;
         });
-        return [last, ...next];
+        return [newItem, ...updatedPrev.slice(0, 3)];
       });
-    }, 8000);
+    }, 4500);
     return () => clearInterval(timer);
   }, []);
 
   return (
-    <div className="flex flex-col h-full justify-between text-left">
+    <div className="flex flex-col h-full justify-between text-left font-mono relative">
+      <div className="absolute inset-0 bg-[radial-gradient(#ef4444_1px,transparent_1px)] bg-[size:16px_16px] opacity-[0.03] pointer-events-none rounded-2xl"></div>
+      
       <div className="flex items-center justify-between border-b border-border/40 pb-2.5">
-        <span className="text-xs uppercase tracking-wider font-semibold text-red-600 dark:text-red-400 font-mono">Live Squad feed</span>
-        <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+        <div className="flex items-center gap-2">
+          <span className="flex h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
+          <span className="text-[10px] uppercase tracking-wider font-semibold text-red-600 dark:text-red-400">root@algoarena:~# tail -f live_events.log</span>
+        </div>
+        <span className="text-[9px] text-muted-foreground bg-secondary/80 px-2 py-0.5 rounded border border-border/40 font-mono">LIVE TICKER</span>
       </div>
-      <div className="space-y-2 mt-3 flex-1 overflow-hidden">
-        {items.map((item) => (
-          <div key={item.id} className="flex items-center justify-between p-2.5 rounded-lg bg-secondary/50 dark:bg-slate-900/30 border border-border/30 dark:border-white/5 text-xs">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-foreground">@{item.user}</span>
-              <span className="text-muted-foreground font-medium">solved</span>
-              <span className="text-red-700 dark:text-red-300 font-semibold truncate max-w-[120px]">{item.problem}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
-                item.diff === "Easy" ? "bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20" : "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border border-yellow-500/20"
-              }`}>{item.diff}</span>
-              <span className="text-[10px] text-muted-foreground tabular-nums">{item.time}</span>
-            </div>
-          </div>
-        ))}
+      
+      <div className="mt-3.5 flex-1 space-y-2.5 overflow-hidden min-h-[175px]">
+        <AnimatePresence initial={false}>
+          {items.map((item) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, x: -20, height: 0, margin: 0, padding: 0 }}
+              animate={{ opacity: 1, x: 0, height: "auto", margin: "inherit", padding: "10px" }}
+              exit={{ opacity: 0, x: 20, height: 0, margin: 0, padding: 0 }}
+              transition={{ type: "spring", stiffness: 220, damping: 20 }}
+              className="flex items-center justify-between rounded-lg bg-secondary/35 dark:bg-slate-900/20 border border-border/30 dark:border-white/5 text-xs hover:border-primary/20 dark:hover:border-primary/30 transition-all duration-300 backdrop-blur-sm overflow-hidden"
+            >
+              <div className="flex items-center gap-2 truncate">
+                <span className="font-bold text-foreground">@{item.user}</span>
+                <span className="text-muted-foreground font-medium text-[9px] border border-border/30 dark:border-white/5 px-1 py-0.2 rounded bg-background/50">solved</span>
+                <span className="text-red-600 dark:text-red-300 font-bold truncate max-w-[120px]">{item.problem}</span>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="text-[9px] text-muted-foreground/80 font-mono">{item.platform}</span>
+                <span className={`px-1.5 py-0.5 rounded text-[9px] font-semibold ${
+                  item.diff === "Easy" 
+                    ? "bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20" 
+                    : item.diff === "Medium"
+                    ? "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border border-yellow-500/20"
+                    : "bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 animate-pulse"
+                }`}>{item.diff}</span>
+                <span className="text-[9px] text-muted-foreground/80 tabular-nums">{item.time}</span>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   );
@@ -670,30 +763,85 @@ function SolverFeedWidget() {
 
 function SystemDesignFlowWidget() {
   return (
-    <div className="flex flex-col h-full justify-between text-left">
+    <div className="flex flex-col h-full justify-between text-left font-mono relative">
       <div className="flex items-center justify-between border-b border-border/40 pb-2.5">
-        <span className="text-xs uppercase tracking-wider font-semibold text-rose-600 dark:text-rose-400 font-mono">Scaling architecture</span>
+        <span className="text-xs uppercase tracking-wider font-semibold text-rose-600 dark:text-rose-400">Scaling architecture</span>
         <BookOpen className="w-3.5 h-3.5 text-muted-foreground" />
       </div>
-      <div className="relative flex flex-col gap-2 mt-4 items-center justify-center flex-1 py-1 font-mono text-[9px] text-muted-foreground">
-        <div className="px-2.5 py-1 bg-white dark:bg-slate-950 border border-border/60 dark:border-white/10 rounded text-foreground font-bold relative shadow-sm">
-          Client
-          <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[1px] h-2 bg-gradient-to-b from-primary to-transparent animate-pulse"></div>
-        </div>
-        
-        <div className="px-2 py-0.5 bg-red-50 dark:bg-red-900/20 border border-red-500/20 rounded mt-1.5 text-red-700 dark:text-red-300">
-          Weighted LB
-        </div>
-        
-        <div className="flex items-center gap-6 mt-1 relative">
-          <div className="px-2 py-0.5 bg-white dark:bg-slate-950 border border-border/40 dark:border-white/5 rounded shadow-sm">Web A</div>
-          <div className="px-2 py-0.5 bg-white dark:bg-slate-950 border border-border/40 dark:border-white/5 rounded shadow-sm">Web B</div>
-        </div>
+      
+      <svg width="100%" height="155" viewBox="0 0 400 180" fill="none" xmlns="http://www.w3.org/2000/svg" className="mt-4 flex-1">
+        {/* Connective Paths */}
+        <path id="c-to-lb" d="M 200 30 L 200 55" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" className="text-border dark:text-white/10" />
+        <path id="lb-to-weba" d="M 200 75 L 110 105" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" className="text-border dark:text-white/10" />
+        <path id="lb-to-webb" d="M 200 75 L 290 105" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" className="text-border dark:text-white/10" />
+        <path id="weba-to-cache" d="M 110 125 L 200 155" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" className="text-border dark:text-white/10" />
+        <path id="webb-to-cache" d="M 290 125 L 200 155" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" className="text-border dark:text-white/10" />
 
-        <div className="px-2.5 py-1 bg-rose-50 dark:bg-rose-900/20 border border-rose-500/20 rounded mt-2 text-rose-700 dark:text-rose-300 font-medium">
-          Redis Cache
-        </div>
-      </div>
+        {/* Dynamic Telemetry Glow Packets */}
+        <circle r="2" fill="hsl(var(--primary))">
+          <animateMotion dur="1.8s" repeatCount="indefinite" path="M 200 30 L 200 55" />
+        </circle>
+        <circle r="1.5" fill="hsl(var(--primary))" opacity="0.6">
+          <animateMotion dur="1.8s" begin="0.4s" repeatCount="indefinite" path="M 200 30 L 200 55" />
+        </circle>
+
+        <circle r="2.5" fill="hsl(var(--primary))">
+          <animateMotion dur="2.4s" repeatCount="indefinite" path="M 200 75 L 110 105" />
+        </circle>
+        <circle r="2" fill="hsl(var(--primary))" opacity="0.5">
+          <animateMotion dur="2.4s" begin="0.6s" repeatCount="indefinite" path="M 200 75 L 110 105" />
+        </circle>
+
+        <circle r="2.5" fill="#f43f5e">
+          <animateMotion dur="2.8s" begin="1s" repeatCount="indefinite" path="M 200 75 L 290 105" />
+        </circle>
+        <circle r="2" fill="#f43f5e" opacity="0.5">
+          <animateMotion dur="2.8s" begin="1.6s" repeatCount="indefinite" path="M 200 75 L 290 105" />
+        </circle>
+
+        <circle r="2" fill="#ec4899">
+          <animateMotion dur="2.2s" repeatCount="indefinite" path="M 110 125 L 200 155" />
+        </circle>
+        <circle r="2" fill="#3b82f6">
+          <animateMotion dur="2.5s" begin="0.5s" repeatCount="indefinite" path="M 290 125 L 200 155" />
+        </circle>
+
+        {/* Nodes Rendering with Pulsing Health Lamps */}
+        {/* Client (x: 200, y: 20) */}
+        <g transform="translate(150, 10)">
+          <rect width="100" height="24" rx="5" className="fill-background stroke-border dark:stroke-white/10" strokeWidth="1" />
+          <circle cx="12" cy="12" r="2.5" fill="#22c55e" className="animate-pulse" />
+          <text x="56" y="15" textAnchor="middle" className="fill-foreground text-[8px] font-bold">Client (Active)</text>
+        </g>
+
+        {/* Weighted LB (x: 200, y: 70) */}
+        <g transform="translate(140, 52)">
+          <rect width="120" height="24" rx="5" className="fill-red-500/5 dark:fill-red-950/20 stroke-red-500/20" strokeWidth="1" />
+          <circle cx="12" cy="12" r="2.5" fill="#22c55e" className="animate-pulse" />
+          <text x="64" y="15" textAnchor="middle" className="fill-red-700 dark:fill-red-400 text-[8px] font-bold">LB (100% SLA)</text>
+        </g>
+
+        {/* Web Server A (x: 90, y: 120) */}
+        <g transform="translate(50, 102)">
+          <rect width="110" height="24" rx="5" className="fill-background stroke-border dark:stroke-white/10" strokeWidth="1" />
+          <circle cx="12" cy="12" r="2.5" fill="#22c55e" />
+          <text x="60" y="15" textAnchor="middle" className="fill-foreground text-[8px] font-semibold">Web A (99.9% Up)</text>
+        </g>
+
+        {/* Web Server B (x: 310, y: 120) */}
+        <g transform="translate(240, 102)">
+          <rect width="110" height="24" rx="5" className="fill-background stroke-border dark:stroke-white/10" strokeWidth="1" />
+          <circle cx="12" cy="12" r="2.5" fill="#22c55e" />
+          <text x="60" y="15" textAnchor="middle" className="fill-foreground text-[8px] font-semibold">Web B (Online)</text>
+        </g>
+
+        {/* Redis Cache (x: 200, y: 170) */}
+        <g transform="translate(140, 148)">
+          <rect width="120" height="24" rx="5" className="fill-rose-500/5 dark:fill-rose-950/20 stroke-rose-500/20" strokeWidth="1" />
+          <circle cx="12" cy="12" r="2.5" fill="#38bdf8" className="animate-pulse" />
+          <text x="66" y="15" textAnchor="middle" className="fill-rose-700 dark:fill-rose-300 text-[8px] font-bold">Redis (0.8ms RT)</text>
+        </g>
+      </svg>
     </div>
   );
 }
@@ -704,6 +852,8 @@ function SortingTerminal() {
   const [currentIndexes, setCurrentIndexes] = useState<number[]>([]);
   const [comparisons, setComparisons] = useState(0);
   const [swaps, setSwaps] = useState(0);
+  const [logs, setLogs] = useState<string[]>([]);
+  const [algorithm, setAlgorithm] = useState<"bubble" | "selection">("bubble");
 
   const resetArray = () => {
     const newArray = Array.from({ length: 8 }, () => Math.floor(Math.random() * 55) + 12);
@@ -711,6 +861,7 @@ function SortingTerminal() {
     setCurrentIndexes([]);
     setComparisons(0);
     setSwaps(0);
+    setLogs([`[INIT] Shuffled new array: [${newArray.join(", ")}]`]);
   };
 
   useEffect(() => {
@@ -726,12 +877,15 @@ function SortingTerminal() {
     const n = arr.length;
     let comp = 0;
     let swp = 0;
+    
+    setLogs((prev) => [...prev.slice(-3), "[RUN] Bubble Sort visualizer initialized"]);
 
     for (let i = 0; i < n - 1; i++) {
       for (let j = 0; j < n - i - 1; j++) {
         setCurrentIndexes([j, j + 1]);
         comp++;
         setComparisons(comp);
+        setLogs((prev) => [...prev.slice(-3), `[COMPARE] arr[${j}] (${arr[j]}) vs arr[${j+1}] (${arr[j+1]})`]);
         await sleep(250);
 
         if (arr[j] > arr[j + 1]) {
@@ -740,17 +894,60 @@ function SortingTerminal() {
           arr[j + 1] = temp;
           swp++;
           setSwaps(swp);
+          setLogs((prev) => [...prev.slice(-3), `[SWAP] Swapped indices ${j} & ${j+1} (${arr[j+1]} <-> ${arr[j]})`]);
           setArray([...arr]);
           await sleep(250);
         }
       }
     }
     setCurrentIndexes([]);
+    setLogs((prev) => [...prev.slice(-3), `[SUCCESS] Bubble Sort complete. comps: ${comp}, swaps: ${swp}`]);
+    setSorting(false);
+  };
+
+  const selectionSort = async () => {
+    if (sorting) return;
+    setSorting(true);
+    const arr = [...array];
+    const n = arr.length;
+    let comp = 0;
+    let swp = 0;
+    
+    setLogs((prev) => [...prev.slice(-3), "[RUN] Selection Sort visualizer initialized"]);
+
+    for (let i = 0; i < n - 1; i++) {
+      let minIdx = i;
+      setLogs((prev) => [...prev.slice(-3), `[ITER] Pass ${i+1}: Finding min from index ${i}`]);
+      for (let j = i + 1; j < n; j++) {
+        setCurrentIndexes([minIdx, j]);
+        comp++;
+        setComparisons(comp);
+        setLogs((prev) => [...prev.slice(-3), `[COMPARE] arr[${j}] (${arr[j]}) < arr[${minIdx}] (${arr[minIdx]})`]);
+        await sleep(250);
+
+        if (arr[j] < arr[minIdx]) {
+          minIdx = j;
+        }
+      }
+
+      if (minIdx !== i) {
+        const temp = arr[i];
+        arr[i] = arr[minIdx];
+        arr[minIdx] = temp;
+        swp++;
+        setSwaps(swp);
+        setLogs((prev) => [...prev.slice(-3), `[SWAP] Found new min. Swapped indices ${i} & ${minIdx} (${arr[i]} <-> ${arr[minIdx]})`]);
+        setArray([...arr]);
+        await sleep(250);
+      }
+    }
+    setCurrentIndexes([]);
+    setLogs((prev) => [...prev.slice(-3), `[SUCCESS] Selection Sort complete. comps: ${comp}, swaps: ${swp}`]);
     setSorting(false);
   };
 
   return (
-    <div className="flex flex-col h-full bg-white/70 dark:bg-slate-950/70 border border-border/50 dark:border-white/5 rounded-2xl p-5 justify-between shadow-sm">
+    <div className="flex flex-col h-full bg-white/70 dark:bg-slate-950/70 border border-border/50 dark:border-white/5 rounded-2xl p-5 justify-between shadow-sm relative overflow-hidden">
       <div className="flex items-center justify-between border-b border-border/40 dark:border-white/5 pb-3">
         <div className="flex items-center gap-2">
           <div className="flex gap-1.5">
@@ -758,9 +955,18 @@ function SortingTerminal() {
             <span className="w-2.5 h-2.5 rounded-full bg-amber-500/85"></span>
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/85"></span>
           </div>
-          <span className="text-[10px] font-mono text-muted-foreground ml-1.5">BubbleSort.tsx</span>
+          <span className="text-[10px] font-mono text-muted-foreground ml-1.5">AlgVisualizer.tsx</span>
         </div>
         <div className="flex gap-2">
+          <select 
+            value={algorithm}
+            onChange={(e) => setAlgorithm(e.target.value as "bubble" | "selection")}
+            disabled={sorting}
+            className="p-1 px-1.5 text-[10px] font-mono bg-secondary hover:bg-secondary/80 border border-border/50 dark:border-white/5 rounded text-foreground outline-none cursor-pointer transition-colors"
+          >
+            <option value="bubble">Bubble Sort</option>
+            <option value="selection">Selection Sort</option>
+          </select>
           <button 
             onClick={resetArray} 
             disabled={sorting} 
@@ -769,16 +975,16 @@ function SortingTerminal() {
             Shuffle
           </button>
           <button 
-            onClick={bubbleSort} 
+            onClick={algorithm === "bubble" ? bubbleSort : selectionSort} 
             disabled={sorting} 
             className="p-1 px-2.5 text-[10px] font-mono bg-primary hover:bg-primary/95 rounded text-white disabled:opacity-40 font-bold transition-all shadow-md shadow-primary/10 cursor-pointer"
           >
-            Run Visualizer
+            Run
           </button>
         </div>
       </div>
 
-      <div className="flex items-end justify-between h-28 px-3 py-2 mt-4 bg-secondary/35 dark:bg-slate-900/40 rounded-xl">
+      <div className="flex items-end justify-between h-28 px-3 py-2 mt-4 bg-secondary/35 dark:bg-slate-900/40 rounded-xl relative crt-lens">
         {array.map((value, idx) => {
           const isComparing = currentIndexes.includes(idx);
           return (
@@ -786,7 +992,7 @@ function SortingTerminal() {
               key={idx}
               layout
               transition={{ type: "spring", stiffness: 350, damping: 25 }}
-              className="w-[8%] flex flex-col items-center gap-1"
+              className="w-[8%] flex flex-col items-center gap-1 z-10"
             >
               <div
                 className={`w-full rounded-t-sm transition-all duration-300 ${
@@ -801,6 +1007,34 @@ function SortingTerminal() {
         })}
       </div>
 
+      <div className="mt-4 p-3 bg-slate-950 border border-emerald-500/10 rounded-xl font-mono text-[9px] text-emerald-400 text-left h-24 overflow-hidden relative shadow-inner">
+        <div className="absolute inset-0 bg-scanline pointer-events-none opacity-[0.04]"></div>
+        <div className="absolute top-2 right-2 flex gap-1 items-center">
+          <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span className="text-[7px] text-emerald-500/40 uppercase">TTY1</span>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          {logs.map((log, index) => (
+            <div key={index} className="flex gap-1.5">
+              <span className="text-emerald-500/30 select-none">&gt;</span>
+              <span className={log.includes("[SWAP]") ? "text-amber-400 font-medium" : log.includes("[SUCCESS]") ? "text-cyan-400 font-bold" : "text-emerald-400"}>
+                {log}
+              </span>
+            </div>
+          ))}
+          {logs.length === 0 && (
+            <div className="text-emerald-500/20">Console active. Press 'Run' to stream.</div>
+          )}
+          {sorting && (
+            <div className="flex gap-1 items-center text-emerald-500/60">
+              <span className="text-emerald-500/30 select-none">&gt;</span>
+              <span>Visualizing...</span>
+              <span className="w-1 h-2 bg-emerald-400 animate-pulse"></span>
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className="flex justify-between items-center text-[10px] font-mono text-muted-foreground mt-4 border-t border-border/40 dark:border-white/5 pt-2.5">
         <span className="flex items-center gap-1.5"><Zap className="w-3 h-3 text-red-500" /> State hooks:</span>
         <div className="flex gap-3">
@@ -812,24 +1046,54 @@ function SortingTerminal() {
   );
 }
 
+const BRAND_DETAILS: Record<string, { border: string; glow: string; text: string; bg: string }> = {
+  LeetCode: { border: "hover:border-amber-500/40", glow: "hover:shadow-amber-500/20 hover:shadow-lg", text: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/5" },
+  Codeforces: { border: "hover:border-blue-500/40", glow: "hover:shadow-blue-500/20 hover:shadow-lg", text: "text-blue-600 dark:text-blue-400", bg: "bg-blue-500/5" },
+  AtCoder: { border: "hover:border-cyan-500/40", glow: "hover:shadow-cyan-500/20 hover:shadow-lg", text: "text-cyan-600 dark:text-cyan-400", bg: "bg-cyan-500/5" },
+  CodeChef: { border: "hover:border-orange-500/40", glow: "hover:shadow-orange-500/20 hover:shadow-lg", text: "text-orange-600 dark:text-orange-400", bg: "bg-orange-500/5" },
+  HackerRank: { border: "hover:border-green-500/40", glow: "hover:shadow-green-500/20 hover:shadow-lg", text: "text-green-600 dark:text-green-400", bg: "bg-green-500/5" },
+  GFG: { border: "hover:border-emerald-500/40", glow: "hover:shadow-emerald-500/20 hover:shadow-lg", text: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/5" },
+};
+
 function PlatformsWidget() {
   return (
-    <div className="flex flex-col h-full justify-between text-left">
+    <div className="flex flex-col h-full justify-between text-left font-mono relative">
       <div className="flex items-center justify-between border-b border-border/40 pb-2.5">
-        <span className="text-xs uppercase tracking-wider font-semibold text-primary font-mono">Connected arenas</span>
+        <span className="text-xs uppercase tracking-wider font-semibold text-primary">Connected arenas</span>
         <Network className="w-3.5 h-3.5 text-muted-foreground" />
       </div>
       <div className="grid grid-cols-3 gap-2 mt-3.5 flex-1">
-        {["LeetCode", "Codeforces", "AtCoder", "CodeChef", "HackerRank", "GFG"].map((plat) => (
-          <div key={plat} className="flex flex-col items-center justify-center p-2 rounded-lg bg-secondary/50 dark:bg-slate-905/30 border border-border/30 dark:border-white/5 text-[10px] font-medium text-foreground/80 hover:border-border/60 dark:hover:border-white/10 hover:bg-slate-900/10 dark:hover:bg-slate-900/20 transition-all">
-            <span className="font-mono text-foreground opacity-85">{plat}</span>
-            <span className="text-[8px] text-green-600 dark:text-green-500 font-mono mt-0.5">● Connected</span>
-          </div>
-        ))}
+        {["LeetCode", "Codeforces", "AtCoder", "CodeChef", "HackerRank", "GFG"].map((plat) => {
+          const brand = BRAND_DETAILS[plat] || { border: "", glow: "", text: "", bg: "" };
+          return (
+            <motion.div 
+              key={plat}
+              whileHover={{ y: -6, scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+              className={`flex flex-col items-center justify-center p-2 rounded-lg bg-secondary/35 dark:bg-slate-900/20 border border-border/30 dark:border-white/5 text-[10px] font-medium text-foreground/80 hover:bg-background/80 transition-all duration-300 shadow-sm cursor-pointer ${brand.border} ${brand.glow}`}
+            >
+              <span className={`font-bold ${brand.text}`}>{plat}</span>
+              <span className="text-[7.5px] text-green-600 dark:text-green-500 font-mono mt-0.5 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                Active
+              </span>
+            </motion.div>
+          );
+        })}
       </div>
     </div>
   );
 }
+
+const CODE_PARTICLES = [
+  { text: "O(1)", top: "15%", left: "10%", delay: "0s", dur: "14s" },
+  { text: "async", top: "25%", left: "80%", delay: "2s", dur: "18s" },
+  { text: "await", top: "75%", left: "15%", delay: "4s", dur: "16s" },
+  { text: "[]", top: "65%", left: "85%", delay: "1s", dur: "12s" },
+  { text: "{}", top: "10%", left: "50%", delay: "3s", dur: "15s" },
+  { text: "ptr->next", top: "85%", left: "45%", delay: "5s", dur: "20s" },
+];
 
 export default function LandingPage3D() {
   const { isAuthenticated, token } = useAuth();
@@ -852,6 +1116,45 @@ export default function LandingPage3D() {
 
   return (
     <div className="relative min-h-screen bg-background text-foreground overflow-y-auto overflow-x-hidden transition-colors duration-300 selection:bg-primary/20">
+      <style>{`
+        @keyframes float-drift-1 {
+          0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+          33% { transform: translate(40px, -50px) scale(1.12) rotate(120deg); }
+          66% { transform: translate(-30px, 30px) scale(0.92) rotate(240deg); }
+        }
+        @keyframes float-drift-2 {
+          0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+          50% { transform: translate(-50px, 40px) scale(1.18) rotate(180deg); }
+        }
+        .animate-float-drift-1 {
+          animation: float-drift-1 22s ease-in-out infinite;
+        }
+        .animate-float-drift-2 {
+          animation: float-drift-2 26s ease-in-out infinite;
+        }
+        .bg-scanline {
+          background: linear-gradient(
+            rgba(18, 16, 16, 0) 50%, 
+            rgba(0, 0, 0, 0.25) 50%
+          ), linear-gradient(
+            90deg,
+            rgba(255, 0, 0, 0.06),
+            rgba(0, 255, 0, 0.02),
+            rgba(0, 0, 255, 0.06)
+          );
+          background-size: 100% 4px, 6px 100%;
+        }
+        .crt-lens::after {
+          content: " ";
+          display: block;
+          position: absolute;
+          top: 0; left: 0; bottom: 0; right: 0;
+          background: radial-gradient(circle, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.45) 100%);
+          pointer-events: none;
+          border-radius: 12px;
+          z-index: 20;
+        }
+      `}</style>
       {/* High tech grid background pattern */}
       <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,rgba(239,68,68,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(239,68,68,0.04)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#2a0c0e_1px,transparent_1px),linear-gradient(to_bottom,#2a0c0e_1px,transparent_1px)] bg-[size:4.5rem_4.5rem] [mask-image:radial-gradient(ellipse_at_center,black_75%,transparent_100%)] opacity-70 dark:opacity-35 font-mono"></div>
 
@@ -982,44 +1285,65 @@ export default function LandingPage3D() {
           </div>
 
           {/* Balanced Asymmetrical 6-Column Bento Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-6 gap-6 perspective-[1200px] mb-8">
+          <motion.div 
+            variants={{
+              hidden: {},
+              visible: {
+                transition: {
+                  staggerChildren: 0.12
+                }
+              }
+            }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.05 }}
+            className="grid grid-cols-1 lg:grid-cols-6 gap-6 perspective-[1200px] mb-8"
+          >
             {/* Bento Card 1: Live Ticker Feed (Wide - 4 Columns) */}
-            <motion.div 
-              whileHover={{ y: -5, rotateX: 1.0, rotateY: 0.5, z: 10 }}
-              transition={{ type: "spring", stiffness: 200, damping: 20 }}
-              className="group relative lg:col-span-4 rounded-2xl bg-card/45 dark:bg-card/20 border border-border/45 dark:border-white/5 p-6 overflow-hidden shadow-sm hover:shadow-md hover:border-primary/20 transform-style-3d min-h-[260px]"
+            <BentoCard 
+              variants={{
+                hidden: { opacity: 0, y: 35, scale: 0.96 },
+                visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 100, damping: 15 } }
+              }}
+              whileHover={{ y: -8, rotateX: 1.5, rotateY: 0.8, z: 12, boxShadow: "0 20px 40px rgba(239, 68, 68, 0.08)" }}
+              className="lg:col-span-4"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <SolverFeedWidget />
-            </motion.div>
+            </BentoCard>
 
             {/* Bento Card 2: Platform Arenas (Compact - 2 Columns) */}
-            <motion.div 
-              whileHover={{ y: -5, rotateX: 1.0, rotateY: -0.5, z: 10 }}
-              transition={{ type: "spring", stiffness: 200, damping: 20 }}
-              className="group relative lg:col-span-2 rounded-2xl bg-card/45 dark:bg-card/20 border border-border/45 dark:border-white/5 p-6 overflow-hidden shadow-sm hover:shadow-md hover:border-primary/20 transform-style-3d min-h-[260px]"
+            <BentoCard 
+              variants={{
+                hidden: { opacity: 0, y: 35, scale: 0.96 },
+                visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 100, damping: 15 } }
+              }}
+              whileHover={{ y: -8, rotateX: 1.5, rotateY: -0.8, z: 12, boxShadow: "0 20px 40px rgba(239, 68, 68, 0.08)" }}
+              className="lg:col-span-2"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <PlatformsWidget />
-            </motion.div>
+            </BentoCard>
 
             {/* Bento Card 3: System Flow Widget (Compact - 2 Columns) */}
-            <motion.div 
-              whileHover={{ y: -5, rotateX: 1.0, rotateY: 0.5, z: 10 }}
-              transition={{ type: "spring", stiffness: 200, damping: 20 }}
-              className="group relative lg:col-span-2 rounded-2xl bg-card/45 dark:bg-card/20 border border-border/45 dark:border-white/5 p-6 overflow-hidden shadow-sm hover:shadow-md hover:border-primary/20 transform-style-3d min-h-[260px]"
+            <BentoCard 
+              variants={{
+                hidden: { opacity: 0, y: 35, scale: 0.96 },
+                visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 100, damping: 15 } }
+              }}
+              whileHover={{ y: -8, rotateX: 1.5, rotateY: 0.8, z: 12, boxShadow: "0 20px 40px rgba(244, 63, 94, 0.08)" }}
+              className="lg:col-span-2"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <SystemDesignFlowWidget />
-            </motion.div>
+            </BentoCard>
 
             {/* Bento Card 4: Squad Leaderboard (Wide - 4 Columns) */}
-            <motion.div 
-              whileHover={{ y: -5, rotateX: -0.5, rotateY: 0.5, z: 10 }}
-              transition={{ type: "spring", stiffness: 200, damping: 20 }}
-              className="group relative lg:col-span-4 rounded-2xl bg-card/45 dark:bg-card/20 border border-border/45 dark:border-white/5 p-6 overflow-hidden shadow-sm hover:shadow-md hover:border-primary/20 transform-style-3d min-h-[260px] flex flex-col justify-between"
+            <BentoCard 
+              variants={{
+                hidden: { opacity: 0, y: 35, scale: 0.96 },
+                visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 100, damping: 15 } }
+              }}
+              whileHover={{ y: -8, rotateX: -0.8, rotateY: 0.8, z: 12, boxShadow: "0 20px 40px rgba(236, 72, 153, 0.08)" }}
+              className="lg:col-span-4"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="flex flex-col justify-between h-full text-left">
                 <div className="space-y-2">
                   <div className="p-2 w-max rounded-lg bg-pink-500/10 border border-border/30 dark:border-white/5 text-pink-500">
@@ -1044,22 +1368,31 @@ export default function LandingPage3D() {
                           <span className="text-muted-foreground">{row.score}</span>
                         </div>
                         <div className="w-full h-1.5 bg-secondary/80 dark:bg-slate-900 rounded-full overflow-hidden">
-                          <div className={`h-full rounded-full ${row.color} ${row.width}`}></div>
+                          <motion.div 
+                            initial={{ width: 0 }}
+                            whileInView={{ width: row.width }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
+                            className={`h-full rounded-full ${row.color}`}
+                          ></motion.div>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
-            </motion.div>
-          </div>
+            </BentoCard>
+          </motion.div>
 
           {/* Dedicated Full-Width Algorithm Visualizer Showcase Panel */}
           <div id="terminal-widget" className="mt-8">
             <motion.div 
-              whileHover={{ y: -5, z: 10 }}
-              transition={{ type: "spring", stiffness: 180, damping: 18 }}
-              className="group relative rounded-2xl bg-card/45 dark:bg-card/20 border border-border/45 dark:border-white/5 p-6 md:p-8 overflow-hidden shadow-sm hover:shadow-md hover:border-primary/20"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.1 }}
+              whileHover={{ y: -6, boxShadow: "0 25px 50px rgba(239, 68, 68, 0.06)" }}
+              transition={{ type: "spring", stiffness: 150, damping: 18 }}
+              className="group relative rounded-2xl bg-card/45 dark:bg-card/20 border border-border/45 dark:border-white/5 p-6 md:p-8 overflow-hidden shadow-sm hover:shadow-md hover:border-primary/20 cursor-pointer"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="flex flex-col md:flex-row gap-8 items-center justify-between">
@@ -1092,14 +1425,31 @@ export default function LandingPage3D() {
       <section id="cta" className="py-28 px-6 bg-background dark:bg-background border-t border-border/40 dark:border-white/5 relative z-10">
         <div className="container mx-auto max-w-4xl">
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="relative p-10 md:p-16 rounded-3xl bg-gradient-to-br from-red-500/5 via-rose-500/5 to-transparent dark:from-red-950/30 dark:to-rose-950/15 border border-border/40 dark:border-white/10 overflow-hidden shadow-sm dark:shadow-2xl flex flex-col items-center text-center gap-6"
+            initial={{ opacity: 0, y: 35, scale: 0.97 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, amount: 0.1 }}
+            whileHover={{ scale: 1.015, borderColor: "rgba(239, 68, 68, 0.35)", boxShadow: "0 0 50px rgba(239, 68, 68, 0.15)" }}
+            transition={{ type: "spring", stiffness: 120, damping: 20 }}
+            className="relative p-10 md:p-16 rounded-3xl bg-gradient-to-br from-red-500/5 via-rose-500/5 to-transparent dark:from-red-950/30 dark:to-rose-950/15 border border-border/40 dark:border-white/10 overflow-hidden shadow-sm dark:shadow-2xl flex flex-col items-center text-center gap-6 cursor-pointer"
           >
-            <div className="absolute -top-24 -left-24 w-64 h-64 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
-            <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-rose-500/5 dark:bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute -top-24 -left-24 w-64 h-64 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl pointer-events-none animate-float-drift-1"></div>
+            <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-rose-500/5 dark:bg-rose-500/10 rounded-full blur-3xl pointer-events-none animate-float-drift-2"></div>
+
+            {/* Drifting Code Syntax Particles */}
+            {CODE_PARTICLES.map((p, idx) => (
+              <span
+                key={idx}
+                className="absolute font-mono text-[9px] font-bold text-primary/15 dark:text-primary/20 pointer-events-none select-none animate-float-drift-1"
+                style={{
+                  top: p.top,
+                  left: p.left,
+                  animationDelay: p.delay,
+                  animationDuration: p.dur,
+                }}
+              >
+                {p.text}
+              </span>
+            ))}
 
             <h2 className="text-3xl md:text-5xl font-extrabold text-foreground tracking-tight leading-tight">
               Ready to claim your place?

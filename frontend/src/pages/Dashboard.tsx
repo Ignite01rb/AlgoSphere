@@ -21,15 +21,12 @@ import { useGroupNotifications } from "@/hooks/use-group-notifications";
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const { activeGroup, setActiveGroup, setShowDiscover } = useAppContext();
+  const { activeGroup, setActiveGroup, setShowDiscover, activeTab, setActiveTab } = useAppContext();
   const [filterText, setFilterText] = useState("");
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [difficultyFilter, setDifficultyFilter] = useState<string>("all");
   const [showFilter, setShowFilter] = useState(false);
   const [selectedProblem, setSelectedProblem] = useState<Problem | null>(null);
-  
-  // Tab control state: overview contains mockup widgets + feed; members contains roster lists
-  const [activeTab, setActiveTab] = useState<"overview" | "members">("overview");
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -212,10 +209,23 @@ const Dashboard = () => {
   const strokeMid = 2 * Math.PI * 20;
   const strokeInner = 2 * Math.PI * 14;
 
+  // Calculate dynamic percentages for the weekly gauges
+  const easyCount = problems.filter(p => p.difficulty.toLowerCase() === "easy").length;
+  const mediumCount = problems.filter(p => p.difficulty.toLowerCase() === "medium").length;
+  const totalCount = problems.length || 1;
+  const easyPercent = problems.length ? Math.round((easyCount / totalCount) * 100) : 0;
+  const mediumPercent = problems.length ? Math.round((mediumCount / totalCount) * 100) : 0;
+  const goalPercent = Math.min(Math.round((weeklyTotal / 10) * 100), 100); // 10 solves as a mock goal baseline
+
+  const circ = 2 * Math.PI * 26;
+  const goalOffset = circ * (1 - goalPercent / 100);
+  const easyOffset = circ * (1 - easyPercent / 100);
+  const mediumOffset = circ * (1 - mediumPercent / 100);
+
   return (
-    <div className="w-full h-full overflow-hidden bg-background">
-      <main className="w-full h-full overflow-y-auto px-8 py-6 space-y-8 scrollbar-thin">
-        <div className="w-full space-y-8">
+    <div className="w-full h-full overflow-hidden bg-transparent">
+      <main className="w-full h-full overflow-y-auto px-8 py-6 space-y-6 scrollbar-thin">
+        <div className="w-full space-y-6">
           {/* Mobile-only Squad Switcher */}
           <div className="md:hidden flex flex-col gap-2.5 p-4 rounded-xl border border-border/40 bg-secondary/25">
             <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground font-bold">
@@ -235,342 +245,382 @@ const Dashboard = () => {
             </select>
           </div>
 
-          {/* Title Header with notification icon */}
+          {/* Title Header with synced detail and live status pill */}
           {activeGroup && (
             <div className="flex items-center justify-between">
-              <div className="flex items-center text-left">
+              <div className="flex flex-col text-left">
                 <h1 className="text-3xl font-extrabold tracking-tight text-foreground font-sans">
                   Dashboard
                 </h1>
-                 <div className="flex items-center gap-1 ml-3 pt-1">
-                  <button 
-                    onClick={() => setShowDiscover(true)}
-                    className="p-1 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/40 transition-all cursor-pointer relative"
-                    title="Discover new squads & join requests"
-                  >
-                    <Bell className="w-4 h-4" />
-                    <span className="absolute top-0 right-0 w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab("members")}
-                    className="p-1 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/40 transition-all cursor-pointer"
-                    title="Squad roster settings"
-                  >
-                    <Settings className="w-4 h-4" />
-                  </button>
-                </div>
+                <p className="text-xs text-muted-foreground font-mono mt-1">
+                  {activeGroupSummary?.name || "raahgav"}'s Squad · synced just now
+                </p>
               </div>
 
-              {/* Tab Selector matches premium mockup */}
-              <div className="flex border-b border-border/20 gap-4 pt-2 select-none">
-                {[
-                  { id: "overview", label: "Dashboard Hub", icon: Code2 },
-                  { id: "members", label: "Squad Roster", icon: Users2 }
-                ].map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id as "overview" | "members")}
-                    className={`pb-2 text-[10px] font-bold tracking-widest uppercase transition-all flex items-center gap-1.5 relative cursor-pointer ${
-                      activeTab === tab.id
-                        ? "text-primary"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <tab.icon className="w-3 h-3" />
-                    {tab.label}
-                    {activeTab === tab.id && (
-                      <motion.span 
-                        layoutId="dashboardActiveTabLine"
-                        className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary"
-                      />
-                    )}
-                  </button>
-                ))}
+              <div className="flex items-center">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-green-50 text-green-600 border border-green-200 dark:bg-green-950/20 dark:text-green-400 dark:border-green-800 animate-pulse">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                  Live
+                </span>
               </div>
             </div>
           )}
 
           {activeGroup ? (
-            <div className="space-y-8">
+            <div className="space-y-6">
               {activeTab === "overview" ? (
                 /* Premium Dashboard Hub Overview */
-                <div className="space-y-8 text-left">
-                  {/* Top Dashboard Row: Stacked Metrics & Top Performers (Left) side-by-side with Boost Your Grind (Right) */}
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-                    {/* Left side: Metrics row and Top Performers Card stacked */}
-                    <div className="lg:col-span-7 flex flex-col gap-6 justify-between">
-                      {/* Metrics row (Unboxed & Cleaned) */}
-                      <div className="flex items-center gap-10 py-2 text-left">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-teal-500 shadow-sm shadow-teal-500/50" />
-                            <span className="text-[10px] text-muted-foreground uppercase font-mono tracking-wider font-semibold">Shared</span>
-                          </div>
-                          <p className="text-3xl font-extrabold tracking-tight text-foreground font-mono mt-1 tabular-nums">
-                            {activeGroupSummary?.problemCount || 0}
-                          </p>
-                        </div>
+                <div className="space-y-6 text-left">
+                  {/* Metric Cards Row */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Shared Card */}
+                    <div className="bg-white dark:bg-zinc-900 border border-border/80 dark:border-white/5 rounded-2xl p-5 shadow-sm text-left flex flex-col justify-between h-32">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-teal-500 shadow-sm shadow-teal-500/50" />
+                        <span className="text-[10px] text-teal-600 dark:text-teal-400 uppercase font-mono tracking-wider font-bold">Shared</span>
+                      </div>
+                      <div className="my-1">
+                        <p className="text-4xl font-extrabold tracking-tight text-foreground font-mono tabular-nums">
+                          {activeGroupSummary?.problemCount || 0}
+                        </p>
+                      </div>
+                      <div className="border-t border-border/40 dark:border-white/5 pt-1.5">
+                        <p className="text-[10px] text-muted-foreground">Problems shared this week</p>
+                      </div>
+                    </div>
 
-                        <div className="h-8 w-px bg-border/30" />
-
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-red-500 shadow-sm shadow-red-500/50" />
-                            <span className="text-[10px] text-muted-foreground uppercase font-mono tracking-wider font-semibold">Members</span>
-                          </div>
-                          <p className="text-3xl font-extrabold tracking-tight text-foreground font-mono mt-1 tabular-nums">
-                            {activeGroupSummary?.memberCount || 0}
-                          </p>
-                        </div>
-
-                        <div className="h-8 w-px bg-border/30" />
-
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-primary shadow-sm shadow-primary/50" />
-                            <span className="text-[10px] text-muted-foreground uppercase font-mono tracking-wider font-semibold">Weekly</span>
-                          </div>
-                          <p className="text-3xl font-extrabold tracking-tight text-foreground font-mono mt-1 tabular-nums">
-                            {weeklyTotal}
-                          </p>
+                    {/* Members Card */}
+                    <div className="bg-white dark:bg-zinc-900 border border-border/80 dark:border-white/5 rounded-2xl p-5 shadow-sm text-left flex flex-col justify-between h-32">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50" />
+                        <span className="text-[10px] text-blue-600 dark:text-blue-400 uppercase font-mono tracking-wider font-bold">Members</span>
+                      </div>
+                      <div className="my-1">
+                        <p className="text-4xl font-extrabold tracking-tight text-foreground font-mono tabular-nums">
+                          {activeGroupSummary?.memberCount || 0}
+                        </p>
+                      </div>
+                      <div className="pt-1.5 flex flex-col gap-1.5">
+                        <p className="text-[10px] text-muted-foreground">Active squad members</p>
+                        {/* Custom blue progress bar indicator */}
+                        <div className="w-full h-1 bg-secondary dark:bg-zinc-800 rounded-full overflow-hidden">
+                          <div className="h-full bg-blue-500" style={{ width: "35%" }} />
                         </div>
                       </div>
+                    </div>
 
-                      {/* Top Performers Leaderboard Card */}
-                      <div className="p-6 rounded-2xl bg-card/15 dark:bg-zinc-950/20 border border-border/20 shadow-sm flex flex-col justify-between flex-grow text-left">
+                    {/* Weekly Card */}
+                    <div className="bg-white dark:bg-zinc-900 border border-border/80 dark:border-white/5 rounded-2xl p-5 shadow-sm text-left flex flex-col justify-between h-32">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-sm shadow-amber-500/50" />
+                        <span className="text-[10px] text-amber-600 dark:text-amber-400 uppercase font-mono tracking-wider font-bold">Weekly</span>
+                      </div>
+                      <div className="my-1">
+                        <p className="text-4xl font-extrabold tracking-tight text-foreground font-mono tabular-nums">
+                          {weeklyTotal}
+                        </p>
+                      </div>
+                      <div className="border-t border-border/40 dark:border-white/5 pt-1.5">
+                        <p className="text-[10px] text-muted-foreground">Problems solved this week</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Main Grid: Left column (Roster and Feed) & Right column (Grind and Progress) */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                    {/* Left side: Performers and Workspace Feed stacked */}
+                    <div className="lg:col-span-8 flex flex-col gap-6">
+                      {/* Top Performers Card */}
+                      <div className="bg-white dark:bg-zinc-900 border border-border/80 dark:border-white/5 rounded-2xl p-6 shadow-sm flex flex-col justify-between text-left">
                         <div className="space-y-4 w-full">
-                          <h3 className="text-base font-bold text-foreground font-sans">Top Performers</h3>
+                          <div className="flex items-center justify-between pb-2 border-b border-border/40 dark:border-white/5">
+                            <h3 className="text-[10px] font-bold text-muted-foreground uppercase font-mono tracking-widest">Top Performers</h3>
+                            <button 
+                              onClick={() => setActiveTab("members")}
+                              className="text-[10px] font-bold text-red-500 hover:text-red-600 transition-colors uppercase tracking-widest inline-flex items-center gap-1 cursor-pointer"
+                            >
+                              View roster <span className="text-xs">↗</span>
+                            </button>
+                          </div>
                           <div className="space-y-3.5 mt-2">
                             {performers.length === 0 ? (
-                              <div className="text-center text-[10px] text-muted-foreground py-12 font-mono">
+                              <div className="text-center text-[10px] text-muted-foreground py-8 font-mono">
                                 No solve records in feed.
                               </div>
                             ) : (
                               performers.map((performer, idx) => (
                                 <div key={performer.username} className="flex items-center justify-between text-xs">
                                   <div className="flex items-center gap-3">
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
-                                      idx === 0 ? "bg-primary/20 text-primary" :
-                                      idx === 1 ? "bg-slate-400/20 text-slate-400" :
-                                      "bg-orange-500/20 text-orange-500"
+                                    <span className="font-mono font-bold text-muted-foreground/60 w-4">#{idx + 1}</span>
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs text-white ${
+                                      idx === 0 ? "bg-red-500" :
+                                      idx === 1 ? "bg-blue-600" :
+                                      "bg-amber-500"
                                     }`}>
-                                      {performer.username.charAt(0).toUpperCase()}
+                                      {performer.username.substring(0, 2).toUpperCase()}
                                     </div>
                                     <div>
                                       <span className="font-bold text-foreground block">@{performer.username}</span>
-                                      <span className="text-[9px] text-muted-foreground block mt-0.5">{performer.solveCount} solved</span>
+                                      <span className="text-[10px] text-muted-foreground block mt-0.5">
+                                        {performer.solveCount} solved · {idx === 0 ? "LeetCode" : "Codeforces"}
+                                      </span>
                                     </div>
                                   </div>
-                                  <span className="font-mono font-bold text-foreground">{performer.percentage}%</span>
+                                  <div className="flex items-center gap-3 w-1/3 justify-end">
+                                    <div className="w-16 h-1.5 bg-secondary dark:bg-zinc-800 rounded-full overflow-hidden hidden sm:block">
+                                      <div className={`h-full ${
+                                        idx === 0 ? "bg-red-500" :
+                                        idx === 1 ? "bg-blue-600" :
+                                        "bg-amber-500"
+                                      }`} style={{ width: `${performer.percentage || 10}%` }} />
+                                    </div>
+                                    <span className="font-mono font-bold text-foreground w-8 text-right">{performer.percentage}%</span>
+                                  </div>
                                 </div>
                               ))
                             )}
                           </div>
                         </div>
-                        <button 
-                          onClick={() => setActiveTab("members")}
-                          className="text-[10px] font-bold text-primary hover:text-primary/80 transition-colors uppercase tracking-widest text-left mt-4 inline-flex items-center gap-1 cursor-pointer"
-                        >
-                          View Roster <ArrowRight className="w-3 h-3" />
-                        </button>
+                        <div className="border-t border-border/40 dark:border-white/5 mt-4 pt-3 text-center">
+                          <button 
+                            onClick={() => setActiveTab("members")}
+                            className="text-[10px] font-bold text-red-500 hover:text-red-600 transition-colors uppercase tracking-widest inline-flex items-center gap-1 cursor-pointer"
+                          >
+                            View full roster <span className="text-xs">↗</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Problems Feed Card */}
+                      <div className="bg-white dark:bg-zinc-900 border border-border/80 dark:border-white/5 rounded-2xl p-6 shadow-sm text-left space-y-6">
+                        <div className="flex items-center justify-between pb-2 border-b border-border/40 dark:border-white/5">
+                          <div className="flex flex-col gap-0.5">
+                            <h3 className="text-[10px] font-bold text-muted-foreground uppercase font-mono tracking-widest">Collaborative Workspace Feed</h3>
+                            <p className="text-[11px] text-muted-foreground">Submit problem URLs from LeetCode, Codeforces, or AtCoder to share with your squad</p>
+                          </div>
+                          <div className="w-6 h-6 border border-border/80 dark:border-white/20 rounded flex items-center justify-center text-muted-foreground">
+                            <span className="text-xs font-mono">⛶</span>
+                          </div>
+                        </div>
+                        
+                        <AddProblemInput onSubmit={(url) => addProblemMutation.mutateAsync(url).then(() => undefined)} />
+
+                        <div className="space-y-3 pt-2">
+                          <div className="flex items-center justify-between px-1 py-1">
+                            <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
+                              Recent Shared Feed
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className={`h-6 w-6 p-0 hover:bg-transparent cursor-pointer ${
+                                showFilter ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                              }`}
+                              onClick={() => {
+                                setShowFilter(!showFilter);
+                                if (showFilter) setFilterText("");
+                              }}
+                              title="Filter problems"
+                            >
+                              <Filter className="w-3.5 h-3.5" />
+                            </Button>
+                          </div>
+
+                          <AnimatePresence>
+                            {showFilter && (
+                              <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="px-3 pb-3 pt-1 overflow-hidden"
+                              >
+                                <Input
+                                  placeholder="Filter by title, contest, @username, difficulty, tags, or platform..."
+                                  value={filterText}
+                                  onChange={(event) => setFilterText(event.target.value)}
+                                  className="h-8 text-xs bg-secondary/30 border-none shadow-none focus-visible:ring-1 focus-visible:ring-primary/50"
+                                  autoFocus
+                                />
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+
+                          {/* Filter Pills */}
+                          <div className="flex flex-col gap-2.5 px-1 py-1.5 border-b border-border/10 pb-3">
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
+                              {/* Platform filters */}
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider font-semibold mr-0.5">Platform:</span>
+                                {[
+                                  { label: "All", value: "all" },
+                                  { label: "LeetCode", value: "leetcode" },
+                                  { label: "Codeforces", value: "codeforces" },
+                                  { label: "AtCoder", value: "atcoder" },
+                                ].map((p) => {
+                                  const active = platformFilter === p.value;
+                                  return (
+                                    <button
+                                      key={p.value}
+                                      onClick={() => setPlatformFilter(p.value)}
+                                      className={`px-3 py-0.5 text-[10px] rounded-full border transition-all cursor-pointer font-medium select-none ${
+                                        active
+                                          ? "bg-black text-white dark:bg-white dark:text-black border-transparent"
+                                          : "bg-transparent hover:bg-secondary/20 text-muted-foreground border-border/80 dark:border-white/10"
+                                      }`}
+                                    >
+                                      {p.label}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+
+                              {/* Divider for larger screens */}
+                              <div className="hidden sm:block h-3.5 w-px bg-border/20" />
+
+                              {/* Difficulty filters */}
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider font-semibold mr-0.5">Difficulty:</span>
+                                {[
+                                  { label: "All", value: "all" },
+                                  { label: "Easy", value: "easy" },
+                                  { label: "Medium", value: "medium" },
+                                  { label: "Hard", value: "hard" },
+                                ].map((d) => {
+                                  const active = difficultyFilter === d.value;
+                                  return (
+                                    <button
+                                      key={d.value}
+                                      onClick={() => setDifficultyFilter(d.value)}
+                                      className={`px-3 py-0.5 text-[10px] rounded-full border transition-all cursor-pointer font-medium select-none ${
+                                        active
+                                          ? d.value === "all"
+                                            ? "bg-black text-white dark:bg-white dark:text-black border-transparent"
+                                            : d.value === "easy"
+                                            ? "bg-green-50 text-green-600 border-green-200 dark:bg-green-950/20 dark:text-green-400 dark:border-green-800"
+                                            : d.value === "medium"
+                                            ? "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-950/20 dark:text-amber-400 dark:border-amber-800"
+                                            : "bg-red-50 text-red-600 border-red-200 dark:bg-red-950/20 dark:text-red-400 dark:border-red-800"
+                                          : "bg-transparent hover:bg-secondary/20 text-muted-foreground border-border/80 dark:border-white/10"
+                                      }`}
+                                    >
+                                      {d.label}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
+
+                          {filteredProblems.length === 0 ? (
+                            <div className="p-12 rounded-2xl border border-dashed border-border/60 bg-[#fbfbfa] dark:bg-zinc-900/40 flex flex-col items-center justify-center text-center gap-3.5">
+                              <div className="w-8 h-8 border border-border/80 dark:border-white/20 rounded flex items-center justify-center text-muted-foreground/40">
+                                <span className="text-xs font-mono">⛶</span>
+                              </div>
+                              <div className="space-y-1 max-w-sm">
+                                <p className="text-sm font-bold text-foreground">
+                                  No problems shared yet
+                                </p>
+                                <p className="text-xs text-muted-foreground leading-relaxed">
+                                  Start your group CP ledger! Paste a LeetCode, Codeforces, or AtCoder problem link above.
+                                </p>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex flex-col gap-3.5 mt-2">
+                              {filteredProblems.map((problem, index) => (
+                                <ProblemCard
+                                  key={problem.id}
+                                  problem={problem}
+                                  index={index}
+                                  onClick={() => setSelectedProblem(problem)}
+                                  onDelete={
+                                    activeGroupSummary?.isOwner || user?.username === problem.sharedBy
+                                      ? () => {
+                                          if (window.confirm(`Are you sure you want to remove '${problem.title}'?`)) {
+                                            deleteProblemMutation.mutate(Number(problem.id));
+                                          }
+                                        }
+                                      : undefined
+                                  }
+                                />
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
 
-                    {/* Right side: Boost Your Grind banner card (Matching Glass Style, flex layout) */}
-                    <div className="lg:col-span-5 bg-card/15 dark:bg-zinc-950/20 border border-border/20 backdrop-blur-md rounded-2xl p-6 flex flex-col justify-between shadow-sm text-left">
-                      <div className="flex items-center gap-3">
-                        <div className="relative w-10 h-10 rounded-full overflow-hidden border border-primary/20 bg-secondary/50 flex items-center justify-center">
-                          {user?.avatarUrl ? (
-                            <img src={user.avatarUrl} alt={user.displayName} className="w-full h-full object-cover" />
-                          ) : (
-                            <User className="w-5 h-5 text-muted-foreground" />
-                          )}
-                        </div>
-                        <div className="text-left">
-                          <h3 className="text-sm font-bold text-foreground font-sans tracking-tight">Boost Your Grind</h3>
-                          <p className="text-[10px] text-muted-foreground mt-0.5">Launch squad arena battles</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between mt-8">
-                        <div className="relative w-14 h-14 flex items-center justify-center">
-                          <svg className="w-full h-full transform -rotate-90">
-                            {/* Outer Ring */}
-                            <circle cx="28" cy="28" r="22" stroke="hsl(var(--border) / 0.2)" strokeWidth="2.5" fill="none" />
-                            <circle cx="28" cy="28" r="22" stroke="hsl(var(--primary))" strokeWidth="2.5" fill="none" strokeDasharray={strokeOuter} strokeDashoffset={strokeOuter * (1 - 0.75)} strokeLinecap="round" />
-                            
-                            {/* Middle Ring */}
-                            <circle cx="28" cy="28" r="16" stroke="hsl(var(--border) / 0.2)" strokeWidth="2.5" fill="none" />
-                            <circle cx="28" cy="28" r="16" stroke="hsl(15, 90%, 50%)" strokeWidth="2.5" fill="none" strokeDasharray={strokeMid} strokeDashoffset={strokeMid * (1 - 0.55)} strokeLinecap="round" />
-                            
-                            {/* Inner Ring */}
-                            <circle cx="28" cy="28" r="10" stroke="hsl(var(--border) / 0.2)" strokeWidth="2.5" fill="none" />
-                            <circle cx="28" cy="28" r="10" stroke="hsl(173, 80%, 40%)" strokeWidth="2.5" fill="none" strokeDasharray={strokeInner} strokeDashoffset={strokeInner * (1 - 0.35)} strokeLinecap="round" />
-                          </svg>
-                          <span className="absolute text-[8px] font-mono font-bold text-primary">NOW</span>
+                    {/* Right Column: Boost Grind & Progress Gauges */}
+                    <div className="lg:col-span-4 flex flex-col gap-6">
+                      {/* Boost Your Grind Card */}
+                      <div className="bg-[#fdf4f4] dark:bg-red-950/10 border border-red-100 dark:border-red-900/30 rounded-2xl p-5 shadow-sm flex items-center justify-between text-left">
+                        <div className="flex items-center gap-3.5">
+                          <div className="w-10 h-10 rounded-xl bg-red-500 flex items-center justify-center font-bold text-xs text-white shadow-sm shadow-red-500/20">
+                            BI
+                          </div>
+                          <div>
+                            <h3 className="text-sm font-bold text-foreground font-sans tracking-tight">Boost Your Grind</h3>
+                            <p className="text-[11px] text-muted-foreground mt-0.5">Launch squad arena battles</p>
+                          </div>
                         </div>
                         <button 
                           onClick={() => navigate("/challenges")}
-                          className="w-10 h-10 rounded-full bg-red-500 hover:bg-red-600 text-white font-bold text-[10px] uppercase flex items-center justify-center shadow-lg shadow-red-500/20 transition-all hover:scale-105 cursor-pointer"
+                          className="w-8 h-8 rounded-lg border border-red-200 dark:border-red-900/50 hover:bg-red-100 dark:hover:bg-red-900/30 flex items-center justify-center text-red-500 cursor-pointer transition-all animate-pulse"
                         >
-                          GO
+                          <span className="text-xs font-mono">⛶</span>
                         </button>
                       </div>
-                    </div>
-                  </div>
 
-                  {/* Problems Feed integration */}
-                  <div className="border-t border-border/20 pt-6 space-y-6">
-                    <div className="text-left">
-                      <h3 className="text-sm font-mono font-bold uppercase tracking-wider text-muted-foreground">Collaborative Workspace Feed</h3>
-                      <p className="text-xs text-muted-foreground mt-0.5">Submit problem URLs from LeetCode, Codeforces, or AtCoder to share with your squad</p>
-                    </div>
-                    
-                    <AddProblemInput onSubmit={(url) => addProblemMutation.mutateAsync(url).then(() => undefined)} />
-
-                    <div className="space-y-3 pt-2">
-                      <div className="flex items-center justify-between px-1 py-1">
-                        <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
-                          Recent Shared Feed
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className={`h-6 w-6 p-0 hover:bg-transparent cursor-pointer ${
-                            showFilter ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                          }`}
-                          onClick={() => {
-                            setShowFilter(!showFilter);
-                            if (showFilter) setFilterText("");
-                          }}
-                          title="Filter problems"
-                        >
-                          <Filter className="w-3.5 h-3.5" />
-                        </Button>
-                      </div>
-
-                      <AnimatePresence>
-                        {showFilter && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="px-3 pb-3 pt-1 overflow-hidden"
-                          >
-                            <Input
-                              placeholder="Filter by title, contest, @username, difficulty, tags, or platform..."
-                              value={filterText}
-                              onChange={(event) => setFilterText(event.target.value)}
-                              className="h-8 text-xs bg-secondary/30 border-none shadow-none focus-visible:ring-1 focus-visible:ring-primary/50"
-                              autoFocus
-                            />
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-
-                      {/* Filter Pills */}
-                      <div className="flex flex-col gap-2.5 px-1 py-1.5 border-b border-border/10 pb-3">
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
-                          {/* Platform filters */}
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider font-semibold mr-0.5">Platform:</span>
-                            {[
-                              { label: "All", value: "all" },
-                              { label: "LeetCode", value: "leetcode" },
-                              { label: "Codeforces", value: "codeforces" },
-                              { label: "AtCoder", value: "atcoder" },
-                            ].map((p) => {
-                              const active = platformFilter === p.value;
-                              return (
-                                <button
-                                  key={p.value}
-                                  onClick={() => setPlatformFilter(p.value)}
-                                  className={`px-2.5 py-0.5 text-[10px] rounded-full border transition-all cursor-pointer font-medium select-none ${
-                                    active
-                                      ? "bg-primary/10 text-primary border-primary/30"
-                                      : "bg-secondary/40 hover:bg-secondary/70 text-muted-foreground border-transparent"
-                                  }`}
-                                >
-                                  {p.label}
-                                </button>
-                              );
-                            })}
+                      {/* Weekly Progress Card */}
+                      <div className="bg-white dark:bg-zinc-900 border border-border/80 dark:border-white/5 rounded-2xl p-6 shadow-sm text-left flex flex-col gap-6">
+                        <h3 className="text-[10px] font-bold text-muted-foreground uppercase font-mono tracking-widest border-b border-border/40 dark:border-white/5 pb-2">Weekly Progress</h3>
+                        
+                        <div className="grid grid-cols-3 gap-2 py-2 items-center justify-items-center">
+                          {/* Gauge 1: Goal */}
+                          <div className="flex flex-col items-center gap-3">
+                            <div className="relative w-16 h-16 flex items-center justify-center">
+                              <svg className="w-full h-full transform -rotate-90">
+                                <circle cx="32" cy="32" r="26" stroke="hsl(var(--border) / 0.4)" strokeWidth="2.5" fill="none" />
+                                <circle cx="32" cy="32" r="26" stroke="hsl(var(--primary))" strokeWidth="2.5" fill="none" strokeDasharray={circ} strokeDashoffset={goalOffset} strokeLinecap="round" />
+                              </svg>
+                              <span className="absolute text-[10px] font-bold font-mono text-foreground">{goalPercent}%</span>
+                            </div>
+                            <span className="text-[9px] font-bold text-muted-foreground font-mono uppercase tracking-wider text-center">Goal</span>
                           </div>
 
-                          {/* Divider for larger screens */}
-                          <div className="hidden sm:block h-3.5 w-px bg-border/20" />
+                          {/* Gauge 2: Easy */}
+                          <div className="flex flex-col items-center gap-3">
+                            <div className="relative w-16 h-16 flex items-center justify-center">
+                              <svg className="w-full h-full transform -rotate-90">
+                                <circle cx="32" cy="32" r="26" stroke="hsl(var(--border) / 0.4)" strokeWidth="2.5" fill="none" />
+                                <circle cx="32" cy="32" r="26" stroke="#22c55e" strokeWidth="2.5" fill="none" strokeDasharray={circ} strokeDashoffset={easyOffset} strokeLinecap="round" />
+                              </svg>
+                              <span className="absolute text-[10px] font-bold font-mono text-foreground">{easyPercent}%</span>
+                            </div>
+                            <span className="text-[9px] font-bold text-muted-foreground font-mono uppercase tracking-wider text-center">Easy</span>
+                          </div>
 
-                          {/* Difficulty filters */}
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider font-semibold mr-0.5">Difficulty:</span>
-                            {[
-                              { label: "All", value: "all" },
-                              { label: "Easy", value: "easy" },
-                              { label: "Medium", value: "medium" },
-                              { label: "Hard", value: "hard" },
-                            ].map((d) => {
-                              const active = difficultyFilter === d.value;
-                              return (
-                                <button
-                                  key={d.value}
-                                  onClick={() => setDifficultyFilter(d.value)}
-                                  className={`px-2.5 py-0.5 text-[10px] rounded-full border transition-all cursor-pointer font-medium select-none ${
-                                    active
-                                      ? "bg-primary/10 text-primary border-primary/30"
-                                      : "bg-secondary/40 hover:bg-secondary/70 text-muted-foreground border-transparent"
-                                  }`}
-                                >
-                                  {d.label}
-                                </button>
-                              );
-                            })}
+                          {/* Gauge 3: Medium */}
+                          <div className="flex flex-col items-center gap-3">
+                            <div className="relative w-16 h-16 flex items-center justify-center">
+                              <svg className="w-full h-full transform -rotate-90">
+                                <circle cx="32" cy="32" r="26" stroke="hsl(var(--border) / 0.4)" strokeWidth="2.5" fill="none" />
+                                <circle cx="32" cy="32" r="26" stroke="#eab308" strokeWidth="2.5" fill="none" strokeDasharray={circ} strokeDashoffset={mediumOffset} strokeLinecap="round" />
+                              </svg>
+                              <span className="absolute text-[10px] font-bold font-mono text-foreground">{mediumPercent}%</span>
+                            </div>
+                            <span className="text-[9px] font-bold text-muted-foreground font-mono uppercase tracking-wider text-center">Medium</span>
                           </div>
                         </div>
                       </div>
-
-                      {filteredProblems.length === 0 ? (
-                        <div className="p-12 rounded-2xl border border-dashed border-border/50 bg-secondary/15 flex flex-col items-center justify-center text-center gap-3.5">
-                          <Code2 className="w-9 h-9 text-muted-foreground/45 animate-pulse" />
-                          <div className="space-y-1 max-w-sm">
-                            <p className="text-sm font-bold text-foreground">
-                              {problems.length === 0 ? "No problems shared yet" : "No matching problems"}
-                            </p>
-                            <p className="text-xs text-muted-foreground leading-relaxed">
-                              {problems.length === 0 
-                                ? "Start your group CP ledger! Paste a LeetCode, Codeforces, or AtCoder problem link in the input form above." 
-                                : "We couldn't find any shared problems matching your current filter criteria."}
-                            </p>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col gap-3.5 mt-2">
-                          {filteredProblems.map((problem, index) => (
-                            <ProblemCard
-                              key={problem.id}
-                              problem={problem}
-                              index={index}
-                              onClick={() => setSelectedProblem(problem)}
-                              onDelete={
-                                activeGroupSummary?.isOwner || user?.username === problem.sharedBy
-                                  ? () => {
-                                      if (window.confirm(`Are you sure you want to remove '${problem.title}'?`)) {
-                                        deleteProblemMutation.mutate(Number(problem.id));
-                                      }
-                                    }
-                                  : undefined
-                              }
-                            />
-                          ))}
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
               ) : (
                 /* Tab 2: Detailed Squad Roster & Invite Friends */
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start text-left">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start text-left">
                   {/* Member List cards */}
-                  <div className="md:col-span-7 bg-card/15 dark:bg-zinc-950/20 border border-border/20 rounded-2xl p-6 shadow-sm space-y-4">
+                  <div className="md:col-span-7 bg-white dark:bg-zinc-900 border border-border/80 dark:border-white/5 rounded-2xl p-6 shadow-sm space-y-4">
                     <div>
                       <h3 className="text-sm font-bold text-foreground font-mono uppercase tracking-wider">Active Roster ({membersList.length})</h3>
                       <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
@@ -637,7 +687,7 @@ const Dashboard = () => {
                   </div>
 
                   {/* Add Members section */}
-                  <div className="md:col-span-5 bg-card/15 dark:bg-zinc-950/20 border border-border/20 rounded-2xl p-6 shadow-sm space-y-4">
+                  <div className="md:col-span-5 bg-white dark:bg-zinc-900 border border-border/80 dark:border-white/5 rounded-2xl p-6 shadow-sm space-y-4">
                     <div>
                       <h3 className="text-sm font-bold text-foreground font-mono uppercase tracking-wider">Invite Friends</h3>
                       <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
@@ -678,12 +728,12 @@ const Dashboard = () => {
               )}
             </div>
           ) : (
-            <div className="p-16 rounded-2xl border border-dashed border-border/60 bg-secondary/20 flex flex-col items-center justify-center text-center gap-3">
+            <div className="p-16 rounded-2xl border border-dashed border-border/60 bg-white dark:bg-zinc-900 flex flex-col items-center justify-center text-center gap-3">
               <FlaskConical className="w-10 h-10 text-muted-foreground/40 animate-pulse" />
               <div className="space-y-1.5 max-w-sm">
                 <p className="text-sm font-bold text-foreground">No Squad Context Active</p>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  To view shared ledgers, select an existing squad from the left drawer sidebar or click plus to create one.
+                  To view shared ledgers, select an active squad from the sidebar navigation.
                 </p>
               </div>
             </div>
@@ -693,8 +743,6 @@ const Dashboard = () => {
 
       <AnimatePresence>
         {selectedProblem && <ProblemDetailsModal problem={selectedProblem} onClose={() => setSelectedProblem(null)} />}
-        
-
       </AnimatePresence>
     </div>
   );

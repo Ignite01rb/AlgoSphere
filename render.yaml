@@ -21,7 +21,7 @@ services:
       - key: ALGOSPHERE_DATABASE_SSL_VERIFY_IDENTITY
         value: "true"
       - key: ALGOSPHERE_CORS_ORIGINS
-        value: https://trie-quest.vercel.app
+        value: https://algo-arena-app.vercel.app
       - key: ALGOSPHERE_ALLOWED_HOSTS
         value: algosphere-api.onrender.com,127.0.0.1,localhost
       - key: ALGOSPHERE_DATABASE_AUTO_MIGRATE
