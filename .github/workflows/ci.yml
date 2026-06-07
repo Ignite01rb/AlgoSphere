@@ -56,35 +56,30 @@ jobs:
     name: Backend
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
         with:
           persist-credentials: false
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
         with:
-          go-version-file: backend/go.mod
-          cache-dependency-path: backend/go.sum
+          node-version: 20
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
 
-      - name: Verify formatting
-        working-directory: backend
-        run: |
-          if [ -n "$(gofmt -l $(find . -name '*.go' -print))" ]; then
-            echo "Go files are not gofmt'd"
-            gofmt -l $(find . -name '*.go' -print)
-            exit 1
-          fi
+      - name: Install backend dependencies
+        run: npm ci
 
-      - name: Download Go dependencies
-        working-directory: backend
-        run: go mod download
+      - name: Switch to sqlite for local CI build
+        run: node switch-db.js sqlite
 
-      - name: Run backend tests
-        working-directory: backend
-        run: go test ./...
+      - name: Generate Prisma Client
+        run: npm run db:generate
 
-      - name: Build backend binary
-        working-directory: backend
-        run: go build ./cmd/algosphere
+      - name: Compile backend TypeScript
+        run: npm run build

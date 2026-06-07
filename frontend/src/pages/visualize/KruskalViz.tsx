@@ -103,7 +103,7 @@ export default function KruskalViz() {
 
     // Copy and sort edges by weight
     const sortedEdges = edges
-      .map((e) => ({ ...e, state: "idle" as const }))
+      .map((e) => ({ ...e, state: "idle" as Edge["state"] }))
       .sort((a, b) => a.weight - b.weight);
 
     setEdges([...sortedEdges]);
