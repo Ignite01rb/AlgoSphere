@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { useTheme } from "@/hooks/use-theme";
 
 // Local logo helper component with isolated SVG gradients to prevent circular imports
@@ -94,7 +94,7 @@ export const LoadingScreen = ({ message }: { message?: string }) => {
     return () => clearInterval(progressInterval);
   }, []);
 
-  const containerVariants: any = {
+  const containerVariants: Variants = {
     animate: {
       transition: {
         staggerChildren: 0.05,
@@ -102,7 +102,7 @@ export const LoadingScreen = ({ message }: { message?: string }) => {
     },
   };
 
-  const letterVariants: any = {
+  const letterVariants: Variants = {
     initial: { y: 0, opacity: 0.35, scale: 0.95 },
     animate: {
       y: [0, -3, 0],

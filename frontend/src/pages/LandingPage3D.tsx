@@ -1,7 +1,7 @@
 import React, { Component, ReactNode, Suspense, useRef, useState, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Sparkles } from "@react-three/drei";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { ArrowRight, Code2, Eye, FlaskConical, BookOpen, Award, Network, Zap, LayoutGrid, Sun, Moon, Sliders } from "lucide-react";
 import { Link } from "react-router-dom";
 import * as THREE from "three";
@@ -214,6 +214,7 @@ function NetworkGraph3D({ isDark, speed, colorTheme, showWireframe }: { isDark: 
         const points = [new THREE.Vector3(...edge.start), new THREE.Vector3(...edge.end)];
         const lineGeom = new THREE.BufferGeometry().setFromPoints(points);
         return (
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           <line key={idx} geometry={lineGeom} {...({} as any)}>
             <lineBasicMaterial
               color={isDark ? "#ffffff" : "#000000"}
@@ -403,6 +404,7 @@ function HelixVortex3D({ isDark, speed, colorTheme, showWireframe }: { isDark: b
         const points = [new THREE.Vector3(...edge.start), new THREE.Vector3(...edge.end)];
         const lineGeom = new THREE.BufferGeometry().setFromPoints(points);
         return (
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           <line key={idx} geometry={lineGeom} {...({} as any)}>
             <lineBasicMaterial
               color={isDark ? "#ffffff" : "#000000"}
@@ -508,7 +510,7 @@ function WaveField3D({ isDark, speed, colorTheme, showWireframe }: { isDark: boo
   }, [isDark, colorTheme, showWireframe]);
 
   const nodeRefs = useRef<THREE.Mesh[]>([]);
-  const lineRefs = useRef<any[]>([]);
+  const lineRefs = useRef<THREE.Line[]>([]);
 
   useFrame((state, delta) => {
     const time = state.clock.getElapsedTime();
@@ -573,8 +575,9 @@ function WaveField3D({ isDark, speed, colorTheme, showWireframe }: { isDark: boo
           <line
             key={idx}
             ref={(el) => {
-              if (el) lineRefs.current[idx] = el;
+              if (el) lineRefs.current[idx] = el as THREE.Line;
             }}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             {...({} as any)}
           >
             <bufferGeometry />
@@ -627,8 +630,8 @@ const FEED_EVENTS = [
 interface BentoCardProps {
   children: React.ReactNode;
   className?: string;
-  whileHover?: any;
-  variants?: any;
+  whileHover?: string | object;
+  variants?: Variants;
 }
 
 export function BentoCard({ children, className, whileHover, variants }: BentoCardProps) {
@@ -658,7 +661,7 @@ export function BentoCard({ children, className, whileHover, variants }: BentoCa
       style={{
         "--mouse-x": `${coords.x}px`,
         "--mouse-y": `${coords.y}px`
-      } as any}
+      } as React.CSSProperties}
     >
       {/* Background Spotlight Glow */}
       <div 
