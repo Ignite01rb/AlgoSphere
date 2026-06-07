@@ -510,7 +510,8 @@ function WaveField3D({ isDark, speed, colorTheme, showWireframe }: { isDark: boo
   }, [isDark, colorTheme, showWireframe]);
 
   const nodeRefs = useRef<THREE.Mesh[]>([]);
-  const lineRefs = useRef<THREE.Line[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const lineRefs = useRef<any[]>([]);
 
   useFrame((state, delta) => {
     const time = state.clock.getElapsedTime();
@@ -575,7 +576,7 @@ function WaveField3D({ isDark, speed, colorTheme, showWireframe }: { isDark: boo
           <line
             key={idx}
             ref={(el) => {
-              if (el) lineRefs.current[idx] = el as THREE.Line;
+              if (el) lineRefs.current[idx] = el;
             }}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             {...({} as any)}
@@ -630,7 +631,8 @@ const FEED_EVENTS = [
 interface BentoCardProps {
   children: React.ReactNode;
   className?: string;
-  whileHover?: string | object;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  whileHover?: any;
   variants?: Variants;
 }
 
